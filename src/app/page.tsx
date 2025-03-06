@@ -1,7 +1,7 @@
 "use client"
 
-import useKakaoMap from '@/hooks/useKakaoMap';
 import Script from 'next/script';
+import useKakaoMap from '@/hooks/useKakaoMap';
 
 export default function KakaoMap() {
  const { mapEl, setIsKakaoLoaded } = useKakaoMap();
