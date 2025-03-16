@@ -1,35 +1,35 @@
 {
- "tabnine.experimentalAutoImports": true,
- "workbench.editor.enablePreview": false,
- "editor.wordWrap": "on",
- "editor.tabSize": 1,
- "git.autofetch": true,
- "liveServer.settings.donotShowInfoMsg": true,
- "editor.defaultFormatter": "esbenp.prettier-vscode",
- "typescript.preferences.importModuleSpecifier": "non-relative",
- "editor.codeActionsOnSave": {
-  "source.fixAll.eslint": "explicit"
- },
- "[javascript]": {
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
- },
- "[javascriptreact]": {
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
- },
- "[typescript]": {
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
- },
- "[typescriptreact]": {
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
- },
- "prettier.printWidth": 100,
- "editor.formatOnType": true,
- "editor.formatOnPaste": true,
- "prettier.tabWidth": 1,
- "notebook.formatOnSave.enabled": true,
- "javascript.updateImportsOnFileMove.enabled": "never",
- "workbench.iconTheme": "material-icon-theme",
- "editor.formatOnSave": true,
- "eslint.format.enable": true,
- "vetur.format.options.tabSize": 1
+	"tabnine.experimentalAutoImports": true,
+	"workbench.editor.enablePreview": false,
+	"editor.wordWrap": "on",
+	"editor.tabSize": 1,
+	"git.autofetch": true,
+	"liveServer.settings.donotShowInfoMsg": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"typescript.preferences.importModuleSpecifier": "non-relative",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"prettier.printWidth": 100,
+	"editor.formatOnType": true,
+	"editor.formatOnPaste": true,
+	"prettier.tabWidth": 1,
+	"notebook.formatOnSave.enabled": true,
+	"javascript.updateImportsOnFileMove.enabled": "never",
+	"workbench.iconTheme": "material-icon-theme",
+	"editor.formatOnSave": true,
+	"eslint.format.enable": true,
+	"vetur.format.options.tabSize": 1
 }
