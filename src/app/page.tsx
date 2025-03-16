@@ -2,9 +2,17 @@
 
 import KakaoMap from '@/components/KakaoMap';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
+import useParkInfoData from '@/hooks/useParkInfoList';
+import useParkingInfoData from '@/hooks/useParkingInfoList';
 
 export default function Home() {
 	const { coords } = useKakaoMap();
+
+	const { allParkInfoData } = useParkInfoData();
+	const { allParkingInfoData } = useParkingInfoData();
+
+	console.log('allParkInfoData : ', allParkInfoData);
+	console.log('allParkingInfoData : ', allParkingInfoData);
 
 	return (
 		<main>
@@ -14,7 +22,7 @@ export default function Home() {
 				위도: {coords.latitude}, 경도: {coords.longitude}
 			</p>
 			</div>
-			<div>sdsdf</div> */}
+			<div>aaaa</div> */}
 		</main>
 	);
 }
