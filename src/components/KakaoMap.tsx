@@ -1,9 +1,8 @@
 'use client';
 
 import Script from 'next/script';
-import { useRef, useState } from 'react';
-import { getParkingInfo } from '../actions/getParkingInfo';
-
+import { useEffect, useRef, useState } from 'react';
+import useParkingInfo from '../hooks/useParkingInfo';
 declare global {
   interface Window {
     kakao: any;
@@ -20,19 +19,7 @@ const KakaoMap = () => {
     lng: MY_LNG
   });
   const [radius, setRadius] = useState(DEFAULT_RADIUS);
-
-  const fetchParkingInfo = async () => {
-    try {
-      const res = await getParkingInfo(
-        centerPosition.lat,
-        centerPosition.lng,
-        radius
-      );
-      console.log(res);
-    } catch (error) {
-      console.error('fetchParkingInfo Error', error);
-    }
-  };
+  const { parkingInfo, fetchParkingInfo } = useParkingInfo({centerPosition, radius});
 
   const initializeMap = () => {
     if (mapRef.current && window.kakao) {
@@ -63,6 +50,10 @@ const KakaoMap = () => {
       });
     }
   };
+
+  useEffect(() => {
+    console.log('parkingInfo', parkingInfo);
+  }, [parkingInfo]);
 
   return (
     <div className="relative w-full h-full">
