@@ -6,7 +6,7 @@ import Script from 'next/script';
 const KakaoMap = () => {
  const { mapEl, setIsKakaoLoaded } = useKakaoMap();
 
- return <>
+ return (<>
   <Script
    src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_MAP_KEY}&libraries=services&autoload=false`}
    strategy="afterInteractive"
@@ -15,7 +15,7 @@ const KakaoMap = () => {
    }}
   />
   <main ref={mapEl} className='h-screen'></main>
- </>
+ </>)
 
 }
 export default KakaoMap
