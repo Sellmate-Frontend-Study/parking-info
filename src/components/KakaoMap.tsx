@@ -47,7 +47,6 @@ const KakaoMap = () => {
         const kakaoMap = new window.kakao.maps.Map(mapRef.current, options);
         const marker = new window.kakao.maps.Marker({
           position: position,
-          content: `<div style="background-color: red; width: 12px; height: 12px; border-radius: 50%;"></div>`,
         });
         
         const circle = new window.kakao.maps.Circle({
