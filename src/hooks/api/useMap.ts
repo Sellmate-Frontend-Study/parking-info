@@ -1,7 +1,6 @@
 'use client';
 
 import { api } from '@/api/hooks';
-import { xmlToJson } from '@/utils/xmlToJson';
 import { useEffect, useState } from 'react';
 
 const useMapData = (addr: string) => {
@@ -19,17 +18,13 @@ const useMapData = (addr: string) => {
 
 	const fetchUser = async () => {
 		try {
-			const res = await (
+			const res = (await (
 				await api.get(
-					`http://openapi.seoul.go.kr:8088/48616d4372626c7537326d5579724a/xml/GetParkInfo/1/100${addr ? `/${addr}` : ''}`
+					`http://openapi.seoul.go.kr:8088/48616d4372626c7537326d5579724a/json/GetParkInfo/1/1000${addr ? `/${addr}` : ''}`
 				)
-			).text();
-			const parser = new DOMParser();
-			const xmlDoc = parser.parseFromString(res, 'application/xml');
-			const jsonResult = xmlToJson(xmlDoc.documentElement);
-			console.log(jsonResult);
+			).json()) as { GetParkInfo: any };
 
-			setMapData(jsonResult);
+			setMapData(res.GetParkInfo);
 		} catch (error) {
 			setError(error as Error);
 		} finally {
