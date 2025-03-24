@@ -3,28 +3,32 @@
 import { api } from '@/api/hooks';
 import { useEffect, useState } from 'react';
 
-const useMapData = (addr: string) => {
+const useMapData = () => {
 	const [mapData, setMapData] = useState<any | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
 
-	useEffect(() => {
-		const debounce = setTimeout(() => {
-			fetchUser();
-		}, 500);
+	const fetchData = async (index: number) => {
+		return (await (
+			await api.get(
+				`http://openapi.seoul.go.kr:8088/${process.env.NEXT_PUBLIC_SEOUL_API_KEY}/json/GetParkInfo/${index * 1000 + 1}/${(index + 1) * 1000}`
+			)
+		).json()) as { GetParkInfo: any };
+	};
 
-		return () => clearTimeout(debounce);
-	}, [addr]);
-
-	const fetchUser = async () => {
+	const fetchTotalData = async () => {
 		try {
-			const res = (await (
-				await api.get(
-					`http://openapi.seoul.go.kr:8088/48616d4372626c7537326d5579724a/json/GetParkInfo/1/1000${addr ? `/${addr}` : ''}`
-				)
-			).json()) as { GetParkInfo: any };
+			const res = await fetchData(0);
 
-			setMapData(res.GetParkInfo);
+			const totalRequests = Math.ceil(res.GetParkInfo.list_total_count / 1000);
+			const requests = [...res.GetParkInfo.row];
+
+			for (let i = 1; i < totalRequests; i++) {
+				const res = await fetchData(i);
+				requests.push(...res.GetParkInfo.row);
+			}
+
+			setMapData(requests);
 		} catch (error) {
 			setError(error as Error);
 		} finally {
@@ -32,7 +36,15 @@ const useMapData = (addr: string) => {
 		}
 	};
 
-	return { mapData, loading, error, refetch: fetchUser };
+	useEffect(() => {
+		// const debounce = setTimeout(() => {
+		fetchTotalData();
+		// }, 500);
+
+		// return () => clearTimeout(debounce);
+	}, []);
+
+	return { mapData, loading, error, refetch: fetchData };
 };
 
 export default useMapData;
