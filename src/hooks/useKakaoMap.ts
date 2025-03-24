@@ -1,4 +1,3 @@
-import { getCurrentLocation } from '@/utils/geoLocation';
 import { useEffect, useState } from 'react';
 
 declare global {
@@ -10,34 +9,57 @@ declare global {
 const useKakaoMap = () => {
 	const [centerLocation, setCenterLocation] = useState({ lat: 33.450701, lng: 126.570667 });
 	const [map, setMap] = useState<any>(null);
+	const [circle, setCircle] = useState<any>(null);
 
 	const initMap = (mapElement: HTMLElement) => {
 		window.kakao.maps.load(() => {
-			getCurrentLocation().then((position) => {
-				setCenterLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
-			});
-
+			const center = new window.kakao.maps.LatLng(centerLocation.lat, centerLocation.lng);
 			const options = {
-				center: new window.kakao.maps.LatLng(centerLocation.lat, centerLocation.lng),
+				center: center,
 				level: 3,
 			};
 
-			setMap(new window.kakao.maps.Map(mapElement, options));
+			const map = new window.kakao.maps.Map(mapElement, options);
+			setMap(map);
+
+			const circle = new window.kakao.maps.Circle({
+				center: center,
+				radius: 250,
+				strokeColor: '#75B8FA',
+				fillColor: '#CFE7FF',
+				fillOpacity: 0.3,
+			});
+			circle.setMap(map);
+			setCircle(circle);
+
+			window.kakao.maps.event.addListener(map, 'dragend', () => {
+				const position = map.getCenter();
+				setCenterLocation({ lat: position.getLat(), lng: position.getLng() });
+			});
 		});
 	};
 
-	const setCenter = () => {
+	const setCenter = (lat: number, lng: number) => {
 		if (map) {
-			const moveLocation = new window.kakao.maps.LatLng(centerLocation.lat, centerLocation.lng);
+			const moveLocation = new window.kakao.maps.LatLng(lat, lng);
 			map.setCenter(moveLocation);
+
+			setCenterLocation({ lat, lng });
+		}
+	};
+
+	const setCirclePosition = () => {
+		if (circle) {
+			const moveLocation = new window.kakao.maps.LatLng(centerLocation.lat, centerLocation.lng);
+			circle.setPosition(moveLocation);
 		}
 	};
 
 	useEffect(() => {
-		setCenter();
+		setCirclePosition();
 	}, [centerLocation]);
 
-	return { initMap };
+	return { map, initMap, setCenter };
 };
 
 export default useKakaoMap;

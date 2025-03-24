@@ -1,12 +1,19 @@
 'use client';
 
 import useKakaoMap from '@/hooks/useKakaoMap';
+import { getCurrentLocation } from '@/utils/geoLocation';
 import Script from 'next/script';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { initMap } = useKakaoMap();
+	const { map, initMap, setCenter } = useKakaoMap();
+
+	useEffect(() => {
+		getCurrentLocation().then((position) => {
+			setCenter(position.coords.latitude, position.coords.longitude);
+		});
+	}, [map]);
 
 	return (
 		<>
