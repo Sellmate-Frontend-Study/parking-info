@@ -11,7 +11,7 @@ const useKakaoMap = () => {
 	const [map, setMap] = useState<any>(null);
 	const [circle, setCircle] = useState<any>(null);
 
-	const initMap = (mapElement: HTMLElement) => {
+	const initMap = (mapElement: HTMLElement, radius: number) => {
 		window.kakao.maps.load(() => {
 			const center = new window.kakao.maps.LatLng(centerLocation.lat, centerLocation.lng);
 			const options = {
@@ -24,7 +24,7 @@ const useKakaoMap = () => {
 
 			const circle = new window.kakao.maps.Circle({
 				center: center,
-				radius: 250,
+				radius: radius,
 				strokeColor: '#75B8FA',
 				fillColor: '#CFE7FF',
 				fillOpacity: 0.3,
@@ -59,7 +59,7 @@ const useKakaoMap = () => {
 		setCirclePosition();
 	}, [centerLocation]);
 
-	return { map, initMap, setCenter };
+	return { map, centerLocation, initMap, setCenter };
 };
 
 export default useKakaoMap;

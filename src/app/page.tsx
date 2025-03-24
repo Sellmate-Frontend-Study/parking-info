@@ -1,9 +1,12 @@
 import KakaoMap from '@/components/KakaoMap';
+import { ParkInfoProvider } from '@/providers/ParkInfoProvider';
 
 const Home = () => {
 	return (
 		<div className='h-screen w-screen'>
-			<KakaoMap />
+			<ParkInfoProvider>
+				<KakaoMap />
+			</ParkInfoProvider>
 		</div>
 	);
 };
