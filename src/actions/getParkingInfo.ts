@@ -7,9 +7,7 @@ export const getParkingInfo = async (centerLat: number, centerLng: number, radiu
   try {
     const allParkingData = await parkingService.getAllParkingData();
     const validParkingData = filterValidParkingData(allParkingData);
-    const parkingDataNearByCenter = filterNearByCenter(validParkingData, centerLat, centerLng, radius);
-    
-    return parkingDataNearByCenter;
+    return filterNearByCenter(validParkingData, centerLat, centerLng, radius);    
   } catch (error) {
     console.error('getParkingInfo error', error);
     return [];

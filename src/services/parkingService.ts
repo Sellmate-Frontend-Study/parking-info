@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/apiClient';
-import { ParkingResponse, ParkingInfo } from '@/types/parking';
+import { ParkingResponse } from '@/types/parking';
 
 const START_PAGE = 1;
 const PAGE_SIZE = 1000;
