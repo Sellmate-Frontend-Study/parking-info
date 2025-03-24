@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { getParkingInfo } from '../actions/getParkingInfo';
+import { ParkingInfo } from '@/types/parking';
 
 const useParkingInfo = ({centerPosition, radius}: {centerPosition: {lat: number, lng: number}, radius: number}) => {
-  const [parkingInfo, setParkingInfo] = useState<any[]>([]);
+  const [parkingInfo, setParkingInfo] = useState<ParkingInfo[]>([]);
 
   const fetchParkingInfo = async () => {
     try {
