@@ -2,20 +2,19 @@
 
 import { getParkInfo } from '@/actions/parkInfo';
 import { getParkingInfo } from '@/actions/parkingInfo';
+import { ParkInfo } from '@/types/parkInfo';
+import { ParkingInfo } from '@/types/parkingInfo';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 interface ParkInfoContextInterface {
-	parkInfos?: any; // TODO : Define parkInfo type
-	parkingInfos?: any; // TODO : Define parkingInfo type
+	parkInfos?: ParkInfo[];
+	parkingInfos?: ParkingInfo[];
 }
 
 const parkInfoContext = createContext<ParkInfoContextInterface>({});
 
 export const ParkInfoProvider = ({ children }: { children: React.ReactNode }) => {
-	const [parkInfo, setParkInfo] = useState<ParkInfoContextInterface>({
-		parkInfos: null,
-		parkingInfos: null,
-	});
+	const [parkInfo, setParkInfo] = useState<ParkInfoContextInterface>({});
 
 	useEffect(() => {
 		Promise.all([getParkInfo(), getParkingInfo()]).then(([parkInfos, parkingInfos]) =>

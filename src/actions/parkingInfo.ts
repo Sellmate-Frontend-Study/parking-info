@@ -1,29 +1,28 @@
 'use server';
 
-export const getParkingInfo = async (): Promise<any[]> => {
+import { ParkingInfo, ParkingInfoResponse } from '@/types/parkingInfo';
+
+export const getParkingInfo = async (): Promise<ParkingInfo[]> => {
 	const pageSize = 1000;
 	const apiKey = process.env.NEXT_PUBLIC_OPEN_API_KEY;
+	const apiUrl = `http://openapi.seoul.go.kr:8088/${apiKey}/json/GetParkingInfo`;
 
-	const firstResponse = await fetch(
-		`http://openapi.seoul.go.kr:8088/${apiKey}/json/GetParkingInfo/1/${pageSize}`
-	);
-	const firstJson = await firstResponse.json();
+	const response = await fetch(`${apiUrl}/1/${pageSize}`);
+	const json: ParkingInfoResponse = await response.json();
 
-	const totalCount = firstJson.GetParkingInfo.list_total_count;
-	let parkInfos = [...firstJson.GetParkingInfo.row];
+	const totalCount = json.GetParkingInfo.list_total_count;
+	let parkingInfos = [...json.GetParkingInfo.row];
 
 	let currentIndex = pageSize + 1;
 
 	while (currentIndex <= totalCount) {
 		const endIndex = Math.min(currentIndex + pageSize - 1, totalCount);
-		const response = await fetch(
-			`http://openapi.seoul.go.kr:8088/${apiKey}/json/GetParkingInfo/${currentIndex}/${endIndex}`
-		);
-		const json = await response.json();
+		const response = await fetch(`${apiUrl}/${currentIndex}/${endIndex}`);
+		const json: ParkingInfoResponse = await response.json();
 
-		parkInfos = parkInfos.concat(json.GetParkingInfo.row);
+		parkingInfos = parkingInfos.concat(json.GetParkingInfo.row);
 		currentIndex += pageSize;
 	}
 
-	return parkInfos;
+	return parkingInfos;
 };
