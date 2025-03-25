@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 const useKakaoMap = () => {
 	const RADIUS = 250;
 	const [centerLocation, setCenterLocation] = useState({ lat: 37.5665, lng: 126.978 });
-	const [map, setMap] = useState<any>(null);
-	const [circle, setCircle] = useState<any>(null);
+	const [map, setMap] = useState<kakao.maps.Map | null>(null);
+	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
 
 	const initMap = (mapElement: HTMLElement) => {
 		kakao.maps.load(() => {
