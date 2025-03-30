@@ -7,38 +7,39 @@ import Script from 'next/script';
 import { useEffect, useRef } from 'react';
 
 const KakaoMap = () => {
-	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap } = useKakaoMap();
-	const { parkInfos } = useParkInfo();
+ const mapRef = useRef<HTMLDivElement>(null);
+ const RADIUS = 500
+ const { centerLocation, initMap, createMarker } = useKakaoMap(RADIUS);
+ const { parkInfos } = useParkInfo();
+ useEffect(() => {
+  if (!parkInfos) return
 
-	useEffect(() => {
-		if (parkInfos) {
-			const targetParkInfos = parkInfos.filter((parkInfo) => {
-				const distance = calculateHaversineDistance({
-					lat1: centerLocation.lat,
-					lng1: centerLocation.lng,
-					lat2: parkInfo.LAT,
-					lng2: parkInfo.LOT,
-				});
-				return distance <= RADIUS;
-			});
+  const targetParkInfos = parkInfos.filter((parkInfo) => {
+   const distance = calculateHaversineDistance({
+    lat1: centerLocation.lat,
+    lng1: centerLocation.lng,
+    lat2: parkInfo.LAT,
+    lng2: parkInfo.LOT,
+   });
+   return distance <= RADIUS;
+  });
 
-			console.log(targetParkInfos);
-		}
-	}, [centerLocation, parkInfos]);
+  console.log(centerLocation, targetParkInfos)
+  createMarker(targetParkInfos)
+ }, [centerLocation, parkInfos]);
 
-	return (
-		<>
-			<Script
-				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false`}
-				onLoad={() => mapRef.current && initMap(mapRef.current)}
-			/>
-			<div
-				ref={mapRef}
-				className='h-full w-full'
-			></div>
-		</>
-	);
+ return (
+  <>
+   <Script
+    src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false`}
+    onLoad={() => mapRef.current && initMap(mapRef.current)}
+   />
+   <div
+    ref={mapRef}
+    className='h-full w-full'
+   ></div>
+  </>
+ );
 };
 
 export default KakaoMap;
