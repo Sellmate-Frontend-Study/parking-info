@@ -1,6 +1,7 @@
 'use client';
 
 import useKakaoMap from '@/hooks/useKakaoMap';
+import { setMarkers } from '@/hooks/useKakaoMarker';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
@@ -8,7 +9,7 @@ import { useEffect, useRef } from 'react';
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap } = useKakaoMap();
+	const { RADIUS, map, centerLocation, initMap } = useKakaoMap();
 	const { parkInfos } = useParkInfo();
 
 	useEffect(() => {
@@ -23,7 +24,7 @@ const KakaoMap = () => {
 				return distance <= RADIUS;
 			});
 
-			console.log(targetParkInfos);
+			setMarkers(map, targetParkInfos);
 		}
 	}, [centerLocation, parkInfos]);
 
