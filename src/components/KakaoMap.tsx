@@ -2,35 +2,46 @@
 
 import useKakaoMap from '@/hooks/useKakaoMap';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
+import { Location } from '@/types/location';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap } = useKakaoMap();
+	const { RADIUS, centerLocation, initMap, setMarkers } = useKakaoMap();
 	const { parkInfos } = useParkInfo();
 
 	useEffect(() => {
 		if (parkInfos) {
-			const targetParkInfos = parkInfos.filter((parkInfo) => {
-				const distance = calculateHaversineDistance({
-					lat1: centerLocation.lat,
-					lng1: centerLocation.lng,
-					lat2: parkInfo.LAT,
-					lng2: parkInfo.LOT,
-				});
-				return distance <= RADIUS;
-			});
+			const targetParkInfos = parkInfos
+				.map((parkInfo) => {
+					const distance = calculateHaversineDistance({
+						lat1: centerLocation.lat,
+						lng1: centerLocation.lng,
+						lat2: parkInfo.LAT,
+						lng2: parkInfo.LOT,
+					});
 
-			console.log(targetParkInfos);
+					if (distance <= RADIUS) {
+						return {
+							latitude: parkInfo.LAT,
+							longitude: parkInfo.LOT,
+						};
+					}
+				})
+				.filter((element) => element) as Location[];
+
+			if (targetParkInfos.length > 0) {
+				setMarkers(targetParkInfos);
+			}
 		}
 	}, [centerLocation, parkInfos]);
 
 	return (
 		<>
 			<Script
-				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false`}
+				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false&libraries=clusterer`}
 				onLoad={() => mapRef.current && initMap(mapRef.current)}
 			/>
 			<div
