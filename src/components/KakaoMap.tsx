@@ -4,15 +4,16 @@ import useKakaoMap from '@/hooks/useKakaoMap';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap } = useKakaoMap();
+	const { map, RADIUS, centerLocation, initMap } = useKakaoMap();
 	const { parkInfos } = useParkInfo();
+	const [markers, setMarkers] = useState<kakao.maps.Marker[]>([]);
 
 	useEffect(() => {
-		if (parkInfos) {
+		if (parkInfos && map) {
 			const targetParkInfos = parkInfos.filter((parkInfo) => {
 				const distance = calculateHaversineDistance({
 					lat1: centerLocation.lat,
@@ -22,6 +23,16 @@ const KakaoMap = () => {
 				});
 				return distance <= RADIUS;
 			});
+
+			markers.forEach((marker) => marker.setMap(null));
+			const newMarkers = targetParkInfos.map((parkInfo) => {
+				const markerPosition = new kakao.maps.LatLng(parkInfo.LAT, parkInfo.LOT);
+				const marker = new kakao.maps.Marker({ position: markerPosition });
+				marker.setMap(map);
+				return marker;
+			});
+
+			setMarkers(newMarkers);
 
 			console.log(targetParkInfos);
 		}
