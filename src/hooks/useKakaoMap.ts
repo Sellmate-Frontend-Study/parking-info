@@ -5,6 +5,7 @@ const useKakaoMap = () => {
 	const [centerLocation, setCenterLocation] = useState({ lat: 37.5665, lng: 126.978 });
 	const [map, setMap] = useState<kakao.maps.Map | null>(null);
 	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
+	const [centerMarker, setCenterMarker] = useState<kakao.maps.Circle | null>(null);
 
 	const initMap = (mapElement: HTMLElement) => {
 		kakao.maps.load(() => {
@@ -27,6 +28,18 @@ const useKakaoMap = () => {
 			circle.setMap(map);
 			setCircle(circle);
 
+			const centerCircle = new kakao.maps.Circle({
+				center: center,
+				radius: 8,
+				strokeWeight: 3,
+				strokeColor: 'white',
+				strokeOpacity: 0.7,
+				fillColor: 'red',
+				fillOpacity: 1,
+			});
+			centerCircle.setMap(map);
+			setCenterMarker(centerCircle);
+
 			kakao.maps.event.addListener(map, 'dragend', () => {
 				const position = map.getCenter();
 				setCenterLocation({ lat: position.getLat(), lng: position.getLng() });
@@ -41,8 +54,16 @@ const useKakaoMap = () => {
 		}
 	};
 
+	const setMarkerPosition = () => {
+		if (centerMarker) {
+			const moveLocation = new kakao.maps.LatLng(centerLocation.lat, centerLocation.lng);
+			centerMarker.setPosition(moveLocation);
+		}
+	};
+
 	useEffect(() => {
 		setCirclePosition();
+		setMarkerPosition();
 	}, [centerLocation]);
 
 	return { map, RADIUS, centerLocation, initMap };
