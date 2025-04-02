@@ -1,8 +1,11 @@
+'use	client';
+
+import { RADIUS_OPTIONS } from '@/constants/radiusOptions';
 import { MarkerType } from '@/types/marker';
 import { useCallback, useEffect, useState } from 'react';
 
 const useKakaoMap = () => {
-	const RADIUS = 250;
+	const [radius, setRadius] = useState<number>(RADIUS_OPTIONS[0].value / 2);
 	const [centerLocation, setCenterLocation] = useState({ lat: 37.5665, lng: 126.978 });
 	const [map, setMap] = useState<kakao.maps.Map | null>(null);
 	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
@@ -21,7 +24,7 @@ const useKakaoMap = () => {
 
 			const kakaoCircle = new kakao.maps.Circle({
 				center,
-				radius: RADIUS,
+				radius,
 				strokeColor: '#75B8FA',
 				fillColor: '#CFE7FF',
 				fillOpacity: 0.3,
@@ -77,7 +80,7 @@ const useKakaoMap = () => {
 		setCirclePosition();
 	}, [centerLocation, setCirclePosition]);
 
-	return { map, RADIUS, centerLocation, initMap, setMarkersFromData };
+	return { map, radius, setRadius, centerLocation, initMap, setMarkersFromData };
 };
 
 export default useKakaoMap;

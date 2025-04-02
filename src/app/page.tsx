@@ -1,5 +1,6 @@
 import KakaoMap from '@/components/KakaoMap';
 import MarkerTypeNotice from '@/components/MarkerTypeNotice';
+import SelectRadius from '@/components/SelectRadius';
 import { ParkInfoProvider } from '@/providers/ParkInfoProvider';
 
 const Home = () => {
@@ -8,6 +9,7 @@ const Home = () => {
 			<ParkInfoProvider>
 				<KakaoMap />
 				<MarkerTypeNotice />
+				<SelectRadius />
 			</ParkInfoProvider>
 		</div>
 	);

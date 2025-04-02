@@ -18,7 +18,7 @@ const getTrafficState = (available: number, total: number): MarkerType => {
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap, setMarkersFromData } = useKakaoMap();
+	const { radius, centerLocation, initMap, setMarkersFromData } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
 
 	useEffect(() => {
@@ -31,7 +31,7 @@ const KakaoMap = () => {
 				lat2: parkInfo.LAT,
 				lng2: parkInfo.LOT,
 			});
-			return distance <= RADIUS;
+			return distance <= radius;
 		});
 
 		const markerData = targetParkInfos.map((parkInfo) => {
