@@ -52,7 +52,7 @@ const KakaoMap = () => {
 	return (
 		<>
 			<Script
-				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false`}
+				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false&libraries=clusterer`}
 				onLoad={() => mapRef.current && initMap(mapRef.current)}
 			/>
 			<div
