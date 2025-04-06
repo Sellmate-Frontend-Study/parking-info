@@ -3,13 +3,15 @@
 import { MarkerType } from '@/types/marker';
 import { Location } from '@/types/location';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocale } from '@/providers/LocaleProvider';
 
 const useKakaoMap = () => {
-	const RADIUS = 250;
 	const [centerLocation, setCenterLocation] = useState({ lat: 37.5665, lng: 126.978 });
+	// const [radius, setRadius] = useState(250);
 	const [map, setMap] = useState<kakao.maps.Map | null>(null);
 	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
 	const markerClusterRef = useRef<kakao.maps.MarkerClusterer | null>(null);
+	const { locale, radius } = useLocale();
 
 	const newLatLng = ({ latitude, longitude }: Location) => {
 		return new kakao.maps.LatLng(latitude, longitude);
@@ -34,7 +36,7 @@ const useKakaoMap = () => {
 
 			const kakaoCircle = new kakao.maps.Circle({
 				center,
-				radius: RADIUS,
+				radius,
 				strokeColor: '#75B8FA',
 				fillColor: '#CFE7FF',
 				fillOpacity: 0.3,
@@ -84,7 +86,20 @@ const useKakaoMap = () => {
 		setCirclePosition();
 	}, [centerLocation, setCirclePosition]);
 
-	return { map, RADIUS, centerLocation, initMap, setMarkersFromData };
+	useEffect(() => {
+		if (locale) {
+			map?.setCenter(newLatLng({ latitude: locale.lat, longitude: locale.lng }));
+			setCenterLocation(locale);
+		}
+	}, [locale]);
+
+	useEffect(() => {
+		if (radius && circle) {
+			circle.setRadius(radius);
+		}
+	}, [radius, circle]);
+
+	return { map, radius, centerLocation, initMap, setMarkersFromData };
 };
 
 export default useKakaoMap;
