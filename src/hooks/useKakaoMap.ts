@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 const useKakaoMap = () => {
 	const RADIUS = 250;
-	const [centerLocation, setCenterLocation] = useState({ lat: 37.5665, lng: 126.978 });
+	const [centerLocation, setCenterLocation] = useState({ latitude: 37.5665, longitude: 126.978 });
 	const [map, setMap] = useState<kakao.maps.Map | null>(null);
 	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
 	const markerClusterRef = useRef<kakao.maps.MarkerClusterer | null>(null);
@@ -17,7 +17,10 @@ const useKakaoMap = () => {
 
 	const initMap = (mapElement: HTMLElement) => {
 		kakao.maps.load(() => {
-			const center = newLatLng({ latitude: centerLocation.lat, longitude: centerLocation.lng });
+			const center = newLatLng({
+				latitude: centerLocation.latitude,
+				longitude: centerLocation.longitude,
+			});
 			const options = {
 				center: center,
 				level: 3,
@@ -44,14 +47,26 @@ const useKakaoMap = () => {
 
 			kakao.maps.event.addListener(kakaoMap, 'dragend', () => {
 				const newCenter = kakaoMap.getCenter();
-				setCenterLocation({ lat: newCenter.getLat(), lng: newCenter.getLng() });
+				setCenterLocation({ latitude: newCenter.getLat(), longitude: newCenter.getLng() });
 			});
 		});
 	};
 
+	const setCenter = ({ latitude, longitude }: Location) => {
+		if (map) {
+			const moveLocation = newLatLng({ latitude, longitude });
+			map.setCenter(moveLocation);
+
+			setCenterLocation({ latitude, longitude });
+		}
+	};
+
 	const setCirclePosition = useCallback(() => {
 		if (circle) {
-			const newCenter = newLatLng({ latitude: centerLocation.lat, longitude: centerLocation.lng });
+			const newCenter = newLatLng({
+				latitude: centerLocation.latitude,
+				longitude: centerLocation.longitude,
+			});
 			circle.setPosition(newCenter);
 		}
 	}, [circle, centerLocation]);
@@ -84,7 +99,7 @@ const useKakaoMap = () => {
 		setCirclePosition();
 	}, [centerLocation, setCirclePosition]);
 
-	return { map, RADIUS, centerLocation, initMap, setMarkersFromData };
+	return { map, RADIUS, centerLocation, initMap, setMarkersFromData, setCenter };
 };
 
 export default useKakaoMap;

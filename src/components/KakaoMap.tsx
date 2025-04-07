@@ -6,6 +6,7 @@ import { MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
+import SearchBar from './SearchBar';
 
 const getTrafficState = (available: number, total: number): MarkerType => {
 	if (total === 1) return 'normal';
@@ -18,7 +19,7 @@ const getTrafficState = (available: number, total: number): MarkerType => {
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap, setMarkersFromData } = useKakaoMap();
+	const { RADIUS, centerLocation, initMap, setMarkersFromData, setCenter } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
 
 	useEffect(() => {
@@ -26,8 +27,8 @@ const KakaoMap = () => {
 
 		const targetParkInfos = parkInfos.filter((parkInfo) => {
 			const distance = calculateHaversineDistance({
-				lat1: centerLocation.lat,
-				lng1: centerLocation.lng,
+				lat1: centerLocation.latitude,
+				lng1: centerLocation.longitude,
 				lat2: parkInfo.LAT,
 				lng2: parkInfo.LOT,
 			});
@@ -54,6 +55,11 @@ const KakaoMap = () => {
 			<Script
 				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false&libraries=clusterer`}
 				onLoad={() => mapRef.current && initMap(mapRef.current)}
+			/>
+			<SearchBar
+				callback={({ latitude, longitude }) => {
+					setCenter({ latitude, longitude });
+				}}
 			/>
 			<div
 				ref={mapRef}
