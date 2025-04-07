@@ -56,6 +56,17 @@ const useKakaoMap = () => {
 		}
 	}, [circle, centerLocation]);
 
+	const setCenterPosition = useCallback(
+		(lat: number, lng: number) => {
+			if (!map) return;
+
+			const newCenter = newLatLng({ latitude: lat, longitude: lng });
+			map.setCenter(newCenter);
+			setCenterLocation({ lat, lng });
+		},
+		[map]
+	);
+
 	const setMarkersFromData = useCallback(
 		(data: { lat: number; lng: number; state: MarkerType }[]) => {
 			if (!map || !markerClusterRef.current) return;
@@ -84,7 +95,7 @@ const useKakaoMap = () => {
 		setCirclePosition();
 	}, [centerLocation, setCirclePosition]);
 
-	return { map, RADIUS, centerLocation, initMap, setMarkersFromData };
+	return { map, RADIUS, centerLocation, initMap, setMarkersFromData, setCenterPosition };
 };
 
 export default useKakaoMap;
