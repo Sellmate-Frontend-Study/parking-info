@@ -5,86 +5,100 @@ import { Location } from '@/types/location';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const useKakaoMap = () => {
-	const RADIUS = 250;
-	const [centerLocation, setCenterLocation] = useState({ lat: 37.5665, lng: 126.978 });
-	const [map, setMap] = useState<kakao.maps.Map | null>(null);
-	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
-	const markerClusterRef = useRef<kakao.maps.MarkerClusterer | null>(null);
+ const RADIUS = 250;
+ const [centerLocation, setCenterLocation] = useState({ lat: 37.5665, lng: 126.978 });
+ const [map, setMap] = useState<kakao.maps.Map | null>(null);
+ const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
+ const markerClusterRef = useRef<kakao.maps.MarkerClusterer | null>(null);
 
-	const newLatLng = ({ latitude, longitude }: Location) => {
-		return new kakao.maps.LatLng(latitude, longitude);
-	};
+ const newLatLng = ({ latitude, longitude }: Location) => {
+  return new kakao.maps.LatLng(latitude, longitude);
+ };
 
-	const initMap = (mapElement: HTMLElement) => {
-		kakao.maps.load(() => {
-			const center = newLatLng({ latitude: centerLocation.lat, longitude: centerLocation.lng });
-			const options = {
-				center: center,
-				level: 3,
-			};
+ const initMap = (mapElement: HTMLElement) => {
+  kakao.maps.load(() => {
+   const center = newLatLng({ latitude: centerLocation.lat, longitude: centerLocation.lng });
+   const options = {
+    center: center,
+    level: 3,
+   };
 
-			const kakaoMap = new kakao.maps.Map(mapElement, options);
-			setMap(kakaoMap);
+   const kakaoMap = new kakao.maps.Map(mapElement, options);
+   setMap(kakaoMap);
 
-			markerClusterRef.current = new kakao.maps.MarkerClusterer({
-				map: kakaoMap,
-				averageCenter: true,
-				minLevel: 5,
-			});
+   markerClusterRef.current = new kakao.maps.MarkerClusterer({
+    map: kakaoMap,
+    averageCenter: true,
+    minLevel: 5,
+   });
 
-			const kakaoCircle = new kakao.maps.Circle({
-				center,
-				radius: RADIUS,
-				strokeColor: '#75B8FA',
-				fillColor: '#CFE7FF',
-				fillOpacity: 0.3,
-			});
-			kakaoCircle.setMap(kakaoMap);
-			setCircle(kakaoCircle);
+   const kakaoCircle = new kakao.maps.Circle({
+    center,
+    radius: RADIUS,
+    strokeColor: '#75B8FA',
+    fillColor: '#CFE7FF',
+    fillOpacity: 0.3,
+   });
+   kakaoCircle.setMap(kakaoMap);
+   setCircle(kakaoCircle);
 
-			kakao.maps.event.addListener(kakaoMap, 'dragend', () => {
-				const newCenter = kakaoMap.getCenter();
-				setCenterLocation({ lat: newCenter.getLat(), lng: newCenter.getLng() });
-			});
-		});
-	};
+   kakao.maps.event.addListener(kakaoMap, 'dragend', () => {
+    const newCenter = kakaoMap.getCenter();
+    setCenterLocation({ lat: newCenter.getLat(), lng: newCenter.getLng() });
+   });
+  });
+ };
 
-	const setCirclePosition = useCallback(() => {
-		if (circle) {
-			const newCenter = newLatLng({ latitude: centerLocation.lat, longitude: centerLocation.lng });
-			circle.setPosition(newCenter);
-		}
-	}, [circle, centerLocation]);
+ const setCirclePosition = useCallback(() => {
+  if (circle) {
+   const newCenter = newLatLng({ latitude: centerLocation.lat, longitude: centerLocation.lng });
+   circle.setPosition(newCenter);
+  }
+ }, [circle, centerLocation]);
 
-	const setMarkersFromData = useCallback(
-		(data: { lat: number; lng: number; state: MarkerType }[]) => {
-			if (!map || !markerClusterRef.current) return;
+ const setMarkersFromData = useCallback(
+  (data: { lat: number; lng: number; state: MarkerType }[]) => {
+   if (!map || !markerClusterRef.current) return;
 
-			markerClusterRef.current.clear();
+   markerClusterRef.current.clear();
 
-			const newMarkers: kakao.maps.Marker[] = data.map(({ lat, lng, state }) => {
-				const imageSrc = `/marker_${state}.svg`;
-				const imageSize = new kakao.maps.Size(30, 32.44);
-				const imageOption = { offset: new kakao.maps.Point(15, 32.44) };
-				const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
-				const markerPosition = newLatLng({ latitude: lat, longitude: lng });
+   const newMarkers: kakao.maps.Marker[] = data.map(({ lat, lng, state }) => {
+    const imageSrc = `/marker_${state}.svg`;
+    const imageSize = new kakao.maps.Size(30, 32.44);
+    const imageOption = { offset: new kakao.maps.Point(15, 32.44) };
+    const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+    const markerPosition = newLatLng({ latitude: lat, longitude: lng });
 
-				return new kakao.maps.Marker({
-					position: markerPosition,
-					image: markerImage,
-				});
-			});
+    return new kakao.maps.Marker({
+     position: markerPosition,
+     image: markerImage,
+    });
+   });
 
-			markerClusterRef.current.addMarkers(newMarkers);
-		},
-		[map]
-	);
+   markerClusterRef.current.addMarkers(newMarkers);
+  },
+  [map]
+ );
 
-	useEffect(() => {
-		setCirclePosition();
-	}, [centerLocation, setCirclePosition]);
+ useEffect(() => {
+  setCirclePosition();
+ }, [centerLocation, setCirclePosition]);
 
-	return { map, RADIUS, centerLocation, initMap, setMarkersFromData };
+ const searchAddress = (value: string) => {
+  console.log(value, map)
+  if (!map) return
+  const geocoder = new kakao.maps.services.Geocoder();
+  geocoder.addressSearch(value, (result: any, status: any) => {
+   if (status === kakao.maps.services.Status.OK && result[0]) {
+    const { x, y } = result[0];
+    const newCenter = new kakao.maps.LatLng(y, x);
+    map.setCenter(newCenter);
+    setCenterLocation({ lat: y, lng: x });
+   }
+  });
+ }
+
+ return { map, RADIUS, centerLocation, initMap, setMarkersFromData, searchAddress };
 };
 
 export default useKakaoMap;
