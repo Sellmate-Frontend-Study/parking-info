@@ -1,6 +1,7 @@
 'use client';
 
 import useKakaoMap from '@/hooks/useKakaoMap';
+import { useLatLng } from '@/providers/LatLngProvider';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
 import { MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
@@ -18,8 +19,9 @@ const getTrafficState = (available: number, total: number): MarkerType => {
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap, setMarkersFromData } = useKakaoMap();
+	const { RADIUS, initMap, setMarkersFromData } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
+	const { centerLocation } = useLatLng();
 
 	useEffect(() => {
 		if (!parkInfos) return;
@@ -52,7 +54,7 @@ const KakaoMap = () => {
 	return (
 		<>
 			<Script
-				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false&libraries=clusterer`}
+				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false&libraries=clusterer,services`}
 				onLoad={() => mapRef.current && initMap(mapRef.current)}
 			/>
 			<div
