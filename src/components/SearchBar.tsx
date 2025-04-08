@@ -34,7 +34,7 @@ const SearchBar = () => {
 	};
 
 	return (
-		<div className='absolute top-0 left-0 z-10 flex w-full items-center justify-center bg-gray-100/50 py-4 '>
+		<div className='absolute top-0 left-0 z-10 -ml-4 flex w-full items-center justify-center bg-gray-100/50 py-4 '>
 			<form
 				className='relative shadow-md'
 				onSubmit={handleSubmit}
