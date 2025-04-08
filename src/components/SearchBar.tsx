@@ -10,7 +10,10 @@ const SearchBar = () => {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (!searchValue) return;
+		if (!searchValue) {
+			alert('검색어를 입력하세요.');
+			return;
+		}
 
 		const apiUrl = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(searchValue)}`;
 		const response = await fetch(apiUrl, {
