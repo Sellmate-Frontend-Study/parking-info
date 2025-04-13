@@ -6,7 +6,9 @@ import { MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
-import SearchBar from './SearchBar';
+import { useAtomValue } from 'jotai';
+import { radiusAtom } from '@/states/radiusAtom';
+import { locationAtom } from '@/states/locationAtom';
 
 const getTrafficState = (available: number, total: number): MarkerType => {
 	if (total === 1) return 'normal';
@@ -19,7 +21,9 @@ const getTrafficState = (available: number, total: number): MarkerType => {
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap, setMarkersFromData, setCenter } = useKakaoMap();
+	const radius = useAtomValue(radiusAtom);
+	const location = useAtomValue(locationAtom);
+	const { initMap, setMarkersFromData } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
 
 	useEffect(() => {
@@ -27,12 +31,12 @@ const KakaoMap = () => {
 
 		const targetParkInfos = parkInfos.filter((parkInfo) => {
 			const distance = calculateHaversineDistance({
-				lat1: centerLocation.latitude,
-				lng1: centerLocation.longitude,
+				lat1: location.latitude,
+				lng1: location.longitude,
 				lat2: parkInfo.LAT,
 				lng2: parkInfo.LOT,
 			});
-			return distance <= RADIUS;
+			return distance <= radius;
 		});
 
 		const markerData = targetParkInfos.map((parkInfo) => {
@@ -48,18 +52,13 @@ const KakaoMap = () => {
 		});
 
 		setMarkersFromData(markerData);
-	}, [centerLocation, parkInfos, parkingInfos]);
+	}, [location, parkInfos, parkingInfos]);
 
 	return (
 		<>
 			<Script
 				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false&libraries=clusterer`}
 				onLoad={() => mapRef.current && initMap(mapRef.current)}
-			/>
-			<SearchBar
-				callback={({ latitude, longitude }) => {
-					setCenter({ latitude, longitude });
-				}}
 			/>
 			<div
 				ref={mapRef}

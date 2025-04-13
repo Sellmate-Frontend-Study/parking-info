@@ -1,11 +1,13 @@
 import KakaoMap from '@/components/KakaoMap';
 import MarkerTypeNotice from '@/components/MarkerTypeNotice';
+import SearchBar from '@/components/SearchBar';
 import { ParkInfoProvider } from '@/providers/ParkInfoProvider';
 
 const Home = () => {
 	return (
 		<div className='relative h-screen w-screen'>
 			<ParkInfoProvider>
+				<SearchBar />
 				<KakaoMap />
 				<MarkerTypeNotice />
 			</ParkInfoProvider>

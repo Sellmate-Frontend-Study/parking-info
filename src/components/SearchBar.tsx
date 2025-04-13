@@ -2,14 +2,12 @@
 
 import { getLocalAddress } from '@/actions/localAddress';
 import useInput from '@/hooks/useInput';
-import { Location } from '@/types/location';
+import { locationAtom } from '@/states/locationAtom';
 import SearchIcon from '@assets/search.svg';
+import { useSetAtom } from 'jotai';
 
-interface SearchBarProps {
-	callback: ({ latitude, longitude }: Location) => void;
-}
-
-const SearchBar = ({ callback }: SearchBarProps) => {
+const SearchBar = () => {
+	const setLocatin = useSetAtom(locationAtom);
 	const { value, handleChange } = useInput();
 	const search = () => {
 		getLocalAddress(value).then((data) => {
@@ -18,7 +16,7 @@ const SearchBar = ({ callback }: SearchBarProps) => {
 				return;
 			}
 
-			callback({
+			setLocatin({
 				latitude: parseFloat(data[0].y),
 				longitude: parseFloat(data[0].x),
 			});
