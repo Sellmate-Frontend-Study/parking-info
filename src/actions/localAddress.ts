@@ -4,7 +4,7 @@ import { LocalAddress, LocalAddressResponse } from '@/types/localAddress';
 
 export const getLocalAddress = async (address: string): Promise<LocalAddress[]> => {
 	const apiKey = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY;
-	const apiUrl = `https://dapi.kakao.com/v2/local/search/keyword`;
+	const apiUrl = process.env.NEXT_PUBLIC_KAKAO_LOCAL_API_URL;
 
 	const response = await fetch(`${apiUrl}?query=${address}`, {
 		headers: {

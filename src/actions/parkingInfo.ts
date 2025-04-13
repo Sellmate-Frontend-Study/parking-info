@@ -5,7 +5,8 @@ import { ParkingInfo, ParkingInfoResponse } from '@/types/parkingInfo';
 export const getParkingInfo = async (): Promise<ParkingInfo[]> => {
 	const pageSize = 1000;
 	const apiKey = process.env.NEXT_PUBLIC_OPEN_API_KEY;
-	const apiUrl = `http://openapi.seoul.go.kr:8088/${apiKey}/json/GetParkingInfo`;
+	const baseUrl = process.env.NEXT_PUBLIC_SEOUL_OPEN_API_URL;
+	const apiUrl = `${baseUrl}/${apiKey}/json/GetParkingInfo`;
 
 	const response = await fetch(`${apiUrl}/1/${pageSize}`);
 	const json: ParkingInfoResponse = await response.json();
