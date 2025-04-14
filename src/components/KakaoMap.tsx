@@ -2,28 +2,28 @@
 
 import useKakaoMap from '@/hooks/useKakaoMap';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
-import { MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { radiusAtom } from '@/states/radiusAtom';
 import { locationAtom } from '@/states/locationAtom';
+import { MarkerType } from '@/types/map';
 
 const getTrafficState = (available: number, total: number): MarkerType => {
-	if (total === 1) return 'normal';
+	if (total === 1) return MarkerType.Normal;
 	const ratio = available / total;
-	if (available >= total) return 'jammed';
-	if (ratio > 0.7) return 'congested';
-	if (ratio > 0) return 'smooth';
-	return 'normal';
+	if (available >= total) return MarkerType.Jammed;
+	if (ratio > 0.7) return MarkerType.Congested;
+	if (ratio > 0) return MarkerType.Smooth;
+	return MarkerType.Normal;
 };
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
 	const radius = useAtomValue(radiusAtom);
 	const location = useAtomValue(locationAtom);
-	const { initMap, setMarkersFromData } = useKakaoMap();
+	const { initMap, clearMarkers, setMarker } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
 
 	useEffect(() => {
@@ -39,19 +39,26 @@ const KakaoMap = () => {
 			return distance <= radius;
 		});
 
-		const markerData = targetParkInfos.map((parkInfo) => {
+		clearMarkers();
+
+		targetParkInfos.forEach((parkInfo) => {
 			const realTimeInfo = parkingInfos?.find(
 				(info) => info.PKLT_NM === parkInfo.PKLT_NM && info.ADDR === parkInfo.ADDR
 			);
 
 			const state: MarkerType = realTimeInfo
 				? getTrafficState(realTimeInfo.NOW_PRK_VHCL_CNT, realTimeInfo.TPKCT)
-				: 'normal';
+				: MarkerType.Normal;
 
-			return { lat: parkInfo.LAT, lng: parkInfo.LOT, state };
+			setMarker({
+				latitude: parkInfo.LAT,
+				longitude: parkInfo.LOT,
+				state: state,
+				clickEvent: () => {
+					console.log(parkInfo);
+				},
+			});
 		});
-
-		setMarkersFromData(markerData);
 	}, [location, parkInfos, parkingInfos]);
 
 	return (

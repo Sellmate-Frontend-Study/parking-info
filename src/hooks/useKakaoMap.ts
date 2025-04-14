@@ -1,11 +1,10 @@
 'use	client';
 
-import { MarkerType } from '@/types/marker';
-import { Location } from '@/types/location';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
 import { radiusAtom } from '@/states/radiusAtom';
 import { locationAtom } from '@/states/locationAtom';
+import { Location, SetMarker } from '@/types/map';
 
 const useKakaoMap = () => {
 	const [radius] = useAtom(radiusAtom);
@@ -55,33 +54,29 @@ const useKakaoMap = () => {
 		});
 	};
 
-	const setMarkersFromData = useCallback(
-		(data: { lat: number; lng: number; state: MarkerType }[]) => {
+	const clearMarkers = () => markerClusterRef.current && markerClusterRef.current.clear();
+
+	const setMarker = useCallback(
+		({ latitude, longitude, state, clickEvent }: SetMarker) => {
 			if (!map || !markerClusterRef.current) return;
 
-			markerClusterRef.current.clear();
+			const imageSrc = `/marker_${state}.svg`;
+			const imageSize = new kakao.maps.Size(30, 32.44);
+			const imageOption = { offset: new kakao.maps.Point(15, 32.44) };
+			const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+			const markerPosition = newLatLng({ latitude, longitude });
 
-			const newMarkers: kakao.maps.Marker[] = data.map(({ lat, lng, state }) => {
-				const imageSrc = `/marker_${state}.svg`;
-				const imageSize = new kakao.maps.Size(30, 32.44);
-				const imageOption = { offset: new kakao.maps.Point(15, 32.44) };
-				const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
-				const markerPosition = newLatLng({ latitude: lat, longitude: lng });
-
-				const marker = new kakao.maps.Marker({
-					position: markerPosition,
-					image: markerImage,
-					clickable: true,
-				});
-
-				kakao.maps.event.addListener(marker, 'click', () => {
-					console.log(marker);
-				});
-
-				return marker;
+			const marker = new kakao.maps.Marker({
+				position: markerPosition,
+				image: markerImage,
+				clickable: true,
 			});
 
-			markerClusterRef.current.addMarkers(newMarkers);
+			kakao.maps.event.addListener(marker, 'click', () => {
+				clickEvent();
+			});
+
+			markerClusterRef.current.addMarker(marker);
 		},
 		[map]
 	);
@@ -97,7 +92,7 @@ const useKakaoMap = () => {
 		}
 	}, [location]);
 
-	return { map, initMap, setMarkersFromData };
+	return { map, initMap, clearMarkers, setMarker };
 };
 
 export default useKakaoMap;
