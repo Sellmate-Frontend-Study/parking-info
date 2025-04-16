@@ -4,11 +4,14 @@ import useKakaoMap from '@/hooks/useKakaoMap';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { radiusAtom } from '@/states/radiusAtom';
 import { locationAtom } from '@/states/locationAtom';
 import { MarkerType } from '@/types/map';
+import Modal from './Modal';
+import ParkInfoDetail from './ParkInfoDetail';
+import { SelectedPark } from '@/types/selectPark';
 
 const getTrafficState = (available: number, total: number): MarkerType => {
 	if (total === 1) return MarkerType.Normal;
@@ -25,6 +28,7 @@ const KakaoMap = () => {
 	const location = useAtomValue(locationAtom);
 	const { initMap, clearMarkers, setMarker } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
+	const [selectedPark, setSelectedPark] = useState<SelectedPark | null>(null);
 
 	useEffect(() => {
 		if (!parkInfos) return;
@@ -55,7 +59,7 @@ const KakaoMap = () => {
 				longitude: parkInfo.LOT,
 				state: state,
 				clickEvent: () => {
-					console.log(parkInfo);
+					setSelectedPark({ info: parkInfo, realTimeInfo: realTimeInfo });
 				},
 			});
 		});
@@ -71,6 +75,15 @@ const KakaoMap = () => {
 				ref={mapRef}
 				className='h-full w-full'
 			></div>
+			{selectedPark && (
+				<Modal>
+					<ParkInfoDetail
+						parkInfo={selectedPark}
+						backdrop={false}
+						onClose={() => setSelectedPark(null)}
+					/>
+				</Modal>
+			)}
 		</>
 	);
 };
