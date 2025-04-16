@@ -1,27 +1,30 @@
 'use client';
 
 import { getLocale } from '@/actions/getLocale';
-import { useLocale } from '@/providers/LocaleProvider';
-import { useEffect, useRef, useState } from 'react';
+import { locationAtom } from '@/atoms/locationAtom';
+import { radiusAtom } from '@/atoms/radiusAtom';
+import { useAtom, useSetAtom } from 'jotai';
+import { useRef, useState } from 'react';
 
 const MainSearchInput = () => {
+	const [radius, setRadius] = useAtom(radiusAtom);
+	const setLocation = useSetAtom(locationAtom);
 	const [query, setQuery] = useState('');
 	const [isFocus, setIsFocus] = useState(false);
-	const { setLocale, radius, setRadius } = useLocale();
 	const searchInputRef = useRef<HTMLInputElement>(null);
 
-	const fetchLocal = async () => {
+	const fetchLocale = async () => {
 		try {
 			const newLatLng = await getLocale(query);
 			if (newLatLng === null) throw new Error('검색결과가 존재하지 않습니다.');
-			setLocale(newLatLng);
+			setLocation(newLatLng);
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
 	const handleEnter = () => {
-		fetchLocal();
+		fetchLocale();
 		setIsFocus(false);
 	};
 

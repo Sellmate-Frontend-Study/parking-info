@@ -10,6 +10,7 @@ export const getParkInfo = async (): Promise<ParkInfo[]> => {
 	const response = await fetch(`${apiUrl}/1/${pageSize}`, {
 		next: { revalidate: 3600 },
 	});
+
 	const json: ParkInfoResponse = await response.json();
 
 	const totalCount = json.GetParkInfo.list_total_count;
