@@ -63,7 +63,7 @@ const KakaoMap = () => {
 				},
 			});
 		});
-	}, [location, parkInfos, parkingInfos]);
+	}, [location, parkInfos, parkingInfos, radius]);
 
 	return (
 		<>
