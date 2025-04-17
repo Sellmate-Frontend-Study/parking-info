@@ -92,6 +92,12 @@ const useKakaoMap = () => {
 		}
 	}, [location]);
 
+	useEffect(() => {
+		if (circle) {
+			circle.setRadius(radius);
+		}
+	}, [radius]);
+
 	return { map, initMap, clearMarkers, setMarker };
 };
 

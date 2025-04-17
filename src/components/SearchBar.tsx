@@ -24,7 +24,7 @@ const SearchBar = () => {
 	};
 
 	return (
-		<div className='absolute top-5 left-10 z-20 flex h-11 w-md flex-row overflow-hidden rounded-full border-1 border-solid border-gray-100 bg-white pl-4 shadow-xl'>
+		<div className='flex h-11 w-md flex-row overflow-hidden rounded-full border-1 border-solid border-gray-100 bg-white pl-4 shadow-xl'>
 			<input
 				type='text'
 				placeholder='지도 검색'
