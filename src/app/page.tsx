@@ -1,19 +1,19 @@
+
 import KakaoMap from '@/components/KakaoMap';
 import MarkerTypeNotice from '@/components/MarkerTypeNotice';
+import ParkInfoLoader from '@/components/ParkInfoLoader';
 import SearchBar from '@/components/SearchBar';
-import { LatLngProvider } from '@/providers/LatLngProvider';
-import { ParkInfoProvider } from '@/providers/ParkInfoProvider';
+import SelectRadius from '@/components/SelectRadius';
 
 const Home = () => {
 	return (
 		<div className='relative h-screen w-screen'>
-			<ParkInfoProvider>
-				<LatLngProvider>
-					<KakaoMap />
-					<MarkerTypeNotice />
-					<SearchBar />
-				</LatLngProvider>
-			</ParkInfoProvider>
+			<KakaoMap />
+			<MarkerTypeNotice />
+			<SelectRadius />
+			<SearchBar />
+			<ParkInfoLoader />
+
 		</div>
 	);
 };

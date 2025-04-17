@@ -1,11 +1,13 @@
 'use client';
 
+import { locationAtom } from '@/stores/locationAtom';
+import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { IoSearch } from 'react-icons/io5';
-import { useLatLng } from '@/providers/LatLngProvider';
 
 const SearchBar = () => {
-	const { setCenterLocation } = useLatLng();
+	const [, setLocation] = useAtom(locationAtom);
+
 	const [searchValue, setSearchValue] = useState<string>('');
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,9 +30,9 @@ const SearchBar = () => {
 			return;
 		}
 		const { x, y } = documents[0];
-		const lat = parseFloat(y);
-		const lng = parseFloat(x);
-		setCenterLocation({ lat, lng });
+		const latitude = parseFloat(y);
+		const longitude = parseFloat(x);
+		setLocation({ latitude, longitude });
 	};
 
 	return (

@@ -1,12 +1,14 @@
 'use client';
 
 import useKakaoMap from '@/hooks/useKakaoMap';
-import { useLatLng } from '@/providers/LatLngProvider';
-import { useParkInfo } from '@/providers/ParkInfoProvider';
 import { MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
+import { useAtom } from 'jotai';
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
+import { parkInfoAtom, parkingInfoAtom } from '@/stores/parkInfoAtom';
+import { locationAtom } from '@/stores/locationAtom';
+import { radiusAtom } from '@/stores/radiusAtom';
 
 const getTrafficState = (available: number, total: number): MarkerType => {
 	if (total === 1) return 'normal';
@@ -19,21 +21,25 @@ const getTrafficState = (available: number, total: number): MarkerType => {
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, initMap, setMarkersFromData } = useKakaoMap();
-	const { parkInfos, parkingInfos } = useParkInfo();
-	const { centerLocation } = useLatLng();
+
+	const [parkInfos] = useAtom(parkInfoAtom);
+	const [parkingInfos] = useAtom(parkingInfoAtom);
+	const [location] = useAtom(locationAtom);
+	const [radius] = useAtom(radiusAtom)
+
+	const { initMap, setMarkersFromData } = useKakaoMap();
 
 	useEffect(() => {
 		if (!parkInfos) return;
 
 		const targetParkInfos = parkInfos.filter((parkInfo) => {
 			const distance = calculateHaversineDistance({
-				lat1: centerLocation.lat,
-				lng1: centerLocation.lng,
+				lat1: location.latitude,
+				lng1: location.longitude,
 				lat2: parkInfo.LAT,
 				lng2: parkInfo.LOT,
 			});
-			return distance <= RADIUS;
+			return distance <= radius;
 		});
 
 		const markerData = targetParkInfos.map((parkInfo) => {
@@ -49,7 +55,7 @@ const KakaoMap = () => {
 		});
 
 		setMarkersFromData(markerData);
-	}, [centerLocation, parkInfos, parkingInfos]);
+	}, [location, parkInfos, parkingInfos, radius]);
 
 	return (
 		<>

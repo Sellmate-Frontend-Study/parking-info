@@ -1,7 +1,9 @@
-import type { Metadata } from "next";
-import "../../public/globals.css";
+
+import type { Metadata } from 'next';
+import '../../public/globals.css';
 import localFont from 'next/font/local';
 import clsx from 'clsx';
+import { Provider } from 'jotai';
 
 const pretendard = localFont({
 	src: '../../public/fonts/PretendardVariable.woff2',
@@ -16,17 +18,15 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={clsx(pretendard.className, 'antialiased')}
-      >
-        {children}
-      </body>
-    </html>
-  );
+	return (
+		<Provider>
+			<html lang='en'>
+				<body className={clsx(pretendard.className, 'antialiased')}>{children}</body>
+			</html>
+		</Provider>
+	);
 }
