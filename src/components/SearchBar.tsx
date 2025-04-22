@@ -36,27 +36,25 @@ const SearchBar = () => {
 	};
 
 	return (
-		<div className='absolute top-0 left-0 z-10 -ml-4 flex w-full items-center justify-center bg-gray-100/50 py-4 '>
-			<form
-				className='relative shadow-md'
-				onSubmit={handleSubmit}
+		<form
+			className='relative rounded-full shadow-md'
+			onSubmit={handleSubmit}
+		>
+			<input
+				placeholder='Search Map'
+				title='Search input'
+				type='text'
+				className='h-8 w-60 rounded-l-full bg-indigo-600 px-4 text-white  placeholder:text-slate-200 focus:outline-none'
+				onChange={(e) => setSearchValue(e.target.value)}
+			/>
+			<button
+				title='search'
+				type='submit'
+				className='absolute top-1/2  -right-8 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-all hover:bg-indigo-50'
 			>
-				<input
-					placeholder='Search Map'
-					title='Search input'
-					type='text'
-					className='h-8 w-60 rounded-l-full bg-indigo-600 px-4 text-white  placeholder:text-slate-200 focus:outline-none'
-					onChange={(e) => setSearchValue(e.target.value)}
-				/>
-				<button
-					title='search'
-					type='submit'
-					className='absolute top-1/2  -right-8 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-all hover:bg-indigo-50'
-				>
-					<IoSearch className='text-[20px] text-indigo-600' />
-				</button>
-			</form>
-		</div>
+				<IoSearch className='text-[20px] text-indigo-600' />
+			</button>
+		</form>
 	);
 };
 

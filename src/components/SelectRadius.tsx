@@ -1,9 +1,12 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import { radiusAtom } from '@/stores/radiusAtom';
+import Select from '@/components/Select';
+import { SelectOption } from '@/types/selectOption';
 
-const RADIUS_OPTIONS = [
+const RADIUS_OPTIONS: SelectOption[] = [
 	{
 		label: '100m',
 		value: 50,
@@ -31,28 +34,24 @@ const RADIUS_OPTIONS = [
 ];
 
 const SelectRadius = () => {
+	const [selectedValue, setSelectedValue] = useState<SelectOption>(RADIUS_OPTIONS[3]);
 	const [, setRadius] = useAtom(radiusAtom);
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setRadius(Number(e.target.value));
 	};
 
+	useEffect(() => {
+		setRadius(selectedValue.value as number);
+	}, [selectedValue]);
+
 	return (
-		<select
-			title='radiusSelect'
-			name='radiusSelect'
-			className='absolute top-0 left-0 z-20'
-			onChange={handleChange}
-		>
-			{RADIUS_OPTIONS.map((opt) => (
-				<option
-					key={opt.value}
-					value={opt.value}
-				>
-					{opt.label}
-				</option>
-			))}
-		</select>
+		<Select
+			options={RADIUS_OPTIONS}
+			value={selectedValue}
+			className='w-24'
+			onChange={setSelectedValue}
+		/>
 	);
 };
 

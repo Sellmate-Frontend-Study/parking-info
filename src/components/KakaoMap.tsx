@@ -25,12 +25,12 @@ const KakaoMap = () => {
 	const [parkInfos] = useAtom(parkInfoAtom);
 	const [parkingInfos] = useAtom(parkingInfoAtom);
 	const [location] = useAtom(locationAtom);
-	const [radius] = useAtom(radiusAtom)
+	const [radius] = useAtom(radiusAtom);
 
-	const { initMap, setMarkersFromData } = useKakaoMap();
+	const { initMap, map, setMarkersFromData, setCirclePosition } = useKakaoMap();
 
 	useEffect(() => {
-		if (!parkInfos) return;
+		if (!parkInfos || !map) return;
 
 		const targetParkInfos = parkInfos.filter((parkInfo) => {
 			const distance = calculateHaversineDistance({
@@ -55,7 +55,12 @@ const KakaoMap = () => {
 		});
 
 		setMarkersFromData(markerData);
-	}, [location, parkInfos, parkingInfos, radius]);
+	}, [map, location, parkInfos, parkingInfos, radius]);
+
+	useEffect(() => {
+		if (!map) return;
+		setCirclePosition();
+	}, [map, radius, location]);
 
 	return (
 		<>

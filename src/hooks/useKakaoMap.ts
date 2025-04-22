@@ -2,14 +2,14 @@
 
 import { MarkerType } from '@/types/marker';
 import { Location } from '@/types/location';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
 import { locationAtom } from '@/stores/locationAtom';
 import { radiusAtom } from '@/stores/radiusAtom';
 
 const useKakaoMap = () => {
 	const [location, setLocation] = useAtom(locationAtom);
-	const[radius] = useAtom(radiusAtom)
+	const [radius] = useAtom(radiusAtom);
 
 	const [map, setMap] = useState<kakao.maps.Map | null>(null);
 	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
@@ -55,11 +55,10 @@ const useKakaoMap = () => {
 
 	const setCirclePosition = useCallback(() => {
 		if (!map || !circle) return;
-		console.log(radius);
-
 
 		const newCenter = newLatLng({ latitude: location.latitude, longitude: location.longitude });
 		circle.setPosition(newCenter);
+		circle.setRadius(radius);
 		map.panTo(newCenter);
 	}, [circle, location, map, radius]);
 
@@ -87,15 +86,12 @@ const useKakaoMap = () => {
 		[map]
 	);
 
-	useEffect(() => {
-		setCirclePosition();
-	}, [location, setCirclePosition, radius]);
-
 	return {
 		map,
 		location,
 		initMap,
 		setMarkersFromData,
+		setCirclePosition,
 	};
 };
 

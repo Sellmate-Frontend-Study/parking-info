@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useState } from 'react';
 
-const useClientRect = (elementRef: RefObject<HTMLElement>) => {
+const useClientRect = (elementRef: RefObject<HTMLElement | null>) => {
 	const [clientRect, setClientRect] = useState<DOMRect>({
 		top: 0,
 		bottom: 0,
