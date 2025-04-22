@@ -1,6 +1,6 @@
 'use	client';
 
-import { MarkerType } from '@/types/marker';
+import { MarkerData } from '@/types/marker';
 import { Location } from '@/types/location';
 import { useCallback, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
@@ -56,29 +56,36 @@ const useKakaoMap = () => {
 	const setCirclePosition = useCallback(() => {
 		if (!map || !circle) return;
 
-		const newCenter = newLatLng({ latitude: location.latitude, longitude: location.longitude });
+		const newCenter = newLatLng(location);
 		circle.setPosition(newCenter);
 		circle.setRadius(radius);
 		map.panTo(newCenter);
 	}, [circle, location, map, radius]);
 
 	const setMarkersFromData = useCallback(
-		(data: { lat: number; lng: number; state: MarkerType }[]) => {
+		(data: MarkerData[]) => {
 			if (!map || !markerClusterRef.current) return;
 
 			markerClusterRef.current.clear();
 
-			const newMarkers: kakao.maps.Marker[] = data.map(({ lat, lng, state }) => {
-				const imageSrc = `/marker_${state}.svg`;
+			const newMarkers: kakao.maps.Marker[] = data.map((item) => {
+				const imageSrc = `/marker_${item.state}.svg`;
 				const imageSize = new kakao.maps.Size(30, 32.44);
 				const imageOption = { offset: new kakao.maps.Point(15, 32.44) };
 				const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
-				const markerPosition = newLatLng({ latitude: lat, longitude: lng });
+				const markerPosition = newLatLng({ latitude: item.latitude, longitude: item.longitude });
 
-				return new kakao.maps.Marker({
+				const marker = new kakao.maps.Marker({
 					position: markerPosition,
 					image: markerImage,
 				});
+
+				kakao.maps.event.addListener(marker, 'click', () => {
+					console.log(`마커 클릭: (${item.latitude}, ${item.longitude}), 상태: ${item.state}`);
+					console.log(item);
+				});
+
+				return marker;
 			});
 
 			markerClusterRef.current.addMarkers(newMarkers);

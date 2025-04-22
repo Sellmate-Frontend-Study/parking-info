@@ -51,7 +51,15 @@ const KakaoMap = () => {
 				? getTrafficState(realTimeInfo.NOW_PRK_VHCL_CNT, realTimeInfo.TPKCT)
 				: 'normal';
 
-			return { lat: parkInfo.LAT, lng: parkInfo.LOT, state };
+			const markerInfo = {
+				latitude: parkInfo.LAT,
+				longitude: parkInfo.LOT,
+				state,
+				parkInfo,
+				realTimeInfo,
+			};
+
+			return markerInfo;
 		});
 
 		setMarkersFromData(markerData);
