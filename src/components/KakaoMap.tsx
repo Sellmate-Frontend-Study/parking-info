@@ -5,10 +5,17 @@ import { useParkInfo } from '@/providers/ParkInfoProvider';
 import { MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
-import { useEffect, useRef } from 'react';
-import { useSetAtom } from 'jotai';
-import { mapAtom } from '@/store/mapAtoms';
+import { useEffect, useRef, useState } from 'react';
 import SearchBar from './SearchBar';
+import Modal from './atoms/Modal';
+import ParkingInfoDetail from './ParkingInfoDetail';
+import { ParkInfo } from '@/types/parkInfo';
+import { ParkingInfo } from '@/types/parkingInfo';
+
+export interface SelectedPark {
+	parkInfo: ParkInfo;
+	realTimeInfo?: ParkingInfo;
+}
 
 const getTrafficState = (available: number, total: number): MarkerType => {
 	if (total === 1) return 'normal';
@@ -21,8 +28,9 @@ const getTrafficState = (available: number, total: number): MarkerType => {
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap, setMarkersFromData } = useKakaoMap();
+	const { RADIUS, centerLocation, initMap, setMarker } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
+	const [selectedPark, setSelectedPark] = useState<SelectedPark | null>(null);
 
 	useEffect(() => {
 		if (!parkInfos) return;
@@ -37,20 +45,29 @@ const KakaoMap = () => {
 			return distance <= RADIUS;
 		});
 
-		const markerData = targetParkInfos.map((parkInfo) => {
+		targetParkInfos.forEach((parkInfo) => {
 			const realTimeInfo = parkingInfos?.find(
 				(info) => info.PKLT_NM === parkInfo.PKLT_NM && info.ADDR === parkInfo.ADDR
 			);
 
-			const state: MarkerType = realTimeInfo
+			const state = realTimeInfo
 				? getTrafficState(realTimeInfo.NOW_PRK_VHCL_CNT, realTimeInfo.TPKCT)
 				: 'normal';
 
-			return { lat: parkInfo.LAT, lng: parkInfo.LOT, state };
+			setMarker({
+				lat: parkInfo.LAT,
+				lng: parkInfo.LOT,
+				state,
+				clickEvent: () => {
+					setSelectedPark({ parkInfo, realTimeInfo });
+				},
+			});
 		});
+	}, [centerLocation, parkInfos, parkingInfos, RADIUS, setMarker]);
 
-		setMarkersFromData(markerData);
-	}, [centerLocation, parkInfos, parkingInfos, RADIUS, setMarkersFromData]);
+	const handleCloseModal = () => {
+		setSelectedPark(null);
+	};
 
 	return (
 		<>
@@ -63,6 +80,18 @@ const KakaoMap = () => {
 				ref={mapRef}
 				className='h-full w-full'
 			></div>
+
+			{selectedPark && (
+				<Modal
+					isOpen={!!selectedPark}
+					onClose={handleCloseModal}
+				>
+					<ParkingInfoDetail
+						parkInfo={selectedPark.parkInfo}
+						realTimeInfo={selectedPark.realTimeInfo}
+					/>
+				</Modal>
+			)}
 		</>
 	);
 };

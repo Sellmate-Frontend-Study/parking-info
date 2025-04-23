@@ -6,6 +6,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { centerLocationAtom, radiusAtom, mapAtom } from '@/store/mapAtoms';
 
+interface SetMarkerOptions {
+	lat: number;
+	lng: number;
+	state: MarkerType;
+	clickEvent: () => void;
+}
+
 const useKakaoMap = () => {
 	const [RADIUS] = useAtom(radiusAtom);
 	const setMapAtom = useSetAtom(mapAtom);
@@ -21,12 +28,11 @@ const useKakaoMap = () => {
 	const initMap = (mapElement: HTMLElement) => {
 		kakao.maps.load(() => {
 			const center = newLatLng({ latitude: centerLocation.lat, longitude: centerLocation.lng });
-			const options = {
-				center: center,
+			const kakaoMap = new kakao.maps.Map(mapElement, {
+				center,
 				level: 3,
-			};
+			});
 
-			const kakaoMap = new kakao.maps.Map(mapElement, options);
 			setMap(kakaoMap);
 			setMapAtom(kakaoMap);
 
@@ -55,7 +61,10 @@ const useKakaoMap = () => {
 
 	const setCirclePosition = useCallback(() => {
 		if (circle) {
-			const newCenter = newLatLng({ latitude: centerLocation.lat, longitude: centerLocation.lng });
+			const newCenter = newLatLng({
+				latitude: centerLocation.lat,
+				longitude: centerLocation.lng,
+			});
 			circle.setPosition(newCenter);
 		}
 	}, [circle, centerLocation]);
@@ -63,7 +72,6 @@ const useKakaoMap = () => {
 	const setCenterPosition = useCallback(
 		(lat: number, lng: number) => {
 			if (!map) return;
-
 			const newCenter = newLatLng({ latitude: lat, longitude: lng });
 			map.setCenter(newCenter);
 			setCenterLocation({ lat, lng });
@@ -71,26 +79,25 @@ const useKakaoMap = () => {
 		[map, setCenterLocation]
 	);
 
-	const setMarkersFromData = useCallback(
-		(data: { lat: number; lng: number; state: MarkerType }[]) => {
+	const setMarker = useCallback(
+		({ lat, lng, state, clickEvent }: SetMarkerOptions) => {
 			if (!map || !markerClusterRef.current) return;
 
-			markerClusterRef.current.clear();
+			const markerImage = new kakao.maps.MarkerImage(
+				`/marker_${state}.svg`,
+				new kakao.maps.Size(30, 32.44),
+				{ offset: new kakao.maps.Point(15, 32.44) }
+			);
 
-			const newMarkers: kakao.maps.Marker[] = data.map(({ lat, lng, state }) => {
-				const imageSrc = `/marker_${state}.svg`;
-				const imageSize = new kakao.maps.Size(30, 32.44);
-				const imageOption = { offset: new kakao.maps.Point(15, 32.44) };
-				const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
-				const markerPosition = newLatLng({ latitude: lat, longitude: lng });
-
-				return new kakao.maps.Marker({
-					position: markerPosition,
-					image: markerImage,
-				});
+			const marker = new kakao.maps.Marker({
+				position: newLatLng({ latitude: lat, longitude: lng }),
+				image: markerImage,
+				clickable: true,
 			});
 
-			markerClusterRef.current.addMarkers(newMarkers);
+			kakao.maps.event.addListener(marker, 'click', clickEvent);
+
+			markerClusterRef.current.addMarker(marker);
 		},
 		[map]
 	);
@@ -99,7 +106,14 @@ const useKakaoMap = () => {
 		setCirclePosition();
 	}, [centerLocation, setCirclePosition]);
 
-	return { map, RADIUS, centerLocation, initMap, setMarkersFromData, setCenterPosition };
+	return {
+		map,
+		RADIUS,
+		centerLocation,
+		initMap,
+		setMarker,
+		setCenterPosition,
+	};
 };
 
 export default useKakaoMap;
