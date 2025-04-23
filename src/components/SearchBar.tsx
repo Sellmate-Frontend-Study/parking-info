@@ -2,14 +2,13 @@
 
 import { searchKeyword } from '@/actions/searchKeyword';
 import { useState } from 'react';
+import { useSetAtom } from 'jotai';
+import { setCenterPositionAtom } from '@/store/mapAtoms';
 import SearchIcon from './SearchIcon';
 
-const SearchBar = ({
-	setCenterPosition,
-}: {
-	setCenterPosition: (lat: number, lng: number) => void;
-}) => {
+const SearchBar = () => {
 	const [keyword, setKeyword] = useState('');
+	const setCenterPosition = useSetAtom(setCenterPositionAtom);
 
 	const handleSearch = async () => {
 		const result = await searchKeyword(keyword.trim());
@@ -18,7 +17,7 @@ const SearchBar = ({
 			return;
 		}
 		if (result) {
-			setCenterPosition(result.lat, result.lng);
+			setCenterPosition({ lat: result.lat, lng: result.lng });
 		}
 	};
 

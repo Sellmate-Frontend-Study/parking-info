@@ -3,10 +3,13 @@
 import { MarkerType } from '@/types/marker';
 import { Location } from '@/types/location';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
+import { centerLocationAtom, radiusAtom, mapAtom } from '@/store/mapAtoms';
 
 const useKakaoMap = () => {
-	const RADIUS = 250;
-	const [centerLocation, setCenterLocation] = useState({ lat: 37.5665, lng: 126.978 });
+	const [RADIUS] = useAtom(radiusAtom);
+	const setMapAtom = useSetAtom(mapAtom);
+	const [centerLocation, setCenterLocation] = useAtom(centerLocationAtom);
 	const [map, setMap] = useState<kakao.maps.Map | null>(null);
 	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
 	const markerClusterRef = useRef<kakao.maps.MarkerClusterer | null>(null);
@@ -25,6 +28,7 @@ const useKakaoMap = () => {
 
 			const kakaoMap = new kakao.maps.Map(mapElement, options);
 			setMap(kakaoMap);
+			setMapAtom(kakaoMap);
 
 			markerClusterRef.current = new kakao.maps.MarkerClusterer({
 				map: kakaoMap,
@@ -64,7 +68,7 @@ const useKakaoMap = () => {
 			map.setCenter(newCenter);
 			setCenterLocation({ lat, lng });
 		},
-		[map]
+		[map, setCenterLocation]
 	);
 
 	const setMarkersFromData = useCallback(

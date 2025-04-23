@@ -6,6 +6,8 @@ import { MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
+import { useSetAtom } from 'jotai';
+import { mapAtom } from '@/store/mapAtoms';
 import SearchBar from './SearchBar';
 
 const getTrafficState = (available: number, total: number): MarkerType => {
@@ -19,7 +21,7 @@ const getTrafficState = (available: number, total: number): MarkerType => {
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap, setMarkersFromData, setCenterPosition } = useKakaoMap();
+	const { RADIUS, centerLocation, initMap, setMarkersFromData } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
 
 	useEffect(() => {
@@ -48,7 +50,7 @@ const KakaoMap = () => {
 		});
 
 		setMarkersFromData(markerData);
-	}, [centerLocation, parkInfos, parkingInfos]);
+	}, [centerLocation, parkInfos, parkingInfos, RADIUS, setMarkersFromData]);
 
 	return (
 		<>
@@ -56,7 +58,7 @@ const KakaoMap = () => {
 				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false&libraries=clusterer`}
 				onLoad={() => mapRef.current && initMap(mapRef.current)}
 			/>
-			<SearchBar setCenterPosition={setCenterPosition} />
+			<SearchBar />
 			<div
 				ref={mapRef}
 				className='h-full w-full'
