@@ -1,11 +1,11 @@
 'use client';
 
-import useKakaoMap from '@/hooks/useKakaoMap';
+import { useEffect, useRef } from 'react';
+import Script from 'next/script';
+import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import { useAtom } from 'jotai';
-import Script from 'next/script';
-import { useEffect, useRef } from 'react';
 import { parkInfoAtom, parkingInfoAtom } from '@/stores/parkInfoAtom';
 import { locationAtom } from '@/stores/locationAtom';
 import { radiusAtom } from '@/stores/radiusAtom';
