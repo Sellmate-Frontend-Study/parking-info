@@ -11,6 +11,8 @@ const MarkerDetailDrawer = () => {
 	const markerDetailInfo = useAtomValue(MarkerDetailAtom);
 	const [isDrawerOpen, setIsDrawerOpen] = useAtom(MarkerDrawerAtom);
 
+	const { name, parkCategory, ...restInfo } = markerDetailInfo || {};
+
 	return (
 		<div
 			className={`
@@ -21,29 +23,26 @@ const MarkerDetailDrawer = () => {
 		>
 			<div className='flex h-fit w-full flex-col gap-y-2 rounded-sm'>
 				{markerDetailInfo ? (
-					Object.entries(markerDetailInfo).map(([key, value]) => {
-						if (key === 'name')
+					<>
+						<h2 className='mt-4 ml-2 flex flex-wrap items-end border-b border-[#ccc] pb-2 text-[20px] font-bold'>
+							<span className='mr-3'>{name}</span>
+							{parkCategory && <div className='text-[14px] text-zinc-600'>{parkCategory}</div>}
+						</h2>
+						{Object.entries(restInfo).map(([key, value]) => {
 							return (
-								<h2
+								<div
 									key={`${key}-${value}`}
-									className='mt-4 ml-2 border-b border-[#ccc] pb-2 text-[20px] font-bold'
+									className='flex items-center gap-x-2 rounded-md p-2'
 								>
-									{value}
-								</h2>
-							);
-						return (
-							<div
-								key={`${key}-${value}`}
-								className='flex items-center gap-x-2 rounded-md p-2'
-							>
-								<div className='w-[100px] text-[14px] font-medium'>
-									{markerDetailMap[`${key}` as keyof MarkerDetail]}
+									<div className='w-[100px] text-[14px] font-medium'>
+										{markerDetailMap[`${key}` as keyof MarkerDetail]}
+									</div>
+									<div className='h-4 w-[1px] bg-white '></div>
+									<div className='flex-1 text-[13px]'>{value}</div>
 								</div>
-								<div className='h-4 w-[1px] bg-white '></div>
-								<div className='flex-1 text-[13px]'>{value}</div>
-							</div>
-						);
-					})
+							);
+						})}
+					</>
 				) : (
 					<div className='text-[rgb(147,147,150)]'>선택된 주차장이 없습니다.</div>
 				)}

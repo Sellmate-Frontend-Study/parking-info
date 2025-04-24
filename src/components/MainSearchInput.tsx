@@ -17,7 +17,7 @@ const MainSearchInput = () => {
 	const [radius, setRadius] = useAtom(radiusAtom);
 	const setLocation = useSetAtom(locationAtom);
 	const [query, setQuery] = useState('');
-	const [isFocus, setIsFocus] = useState(false);
+	// const [isFocus, setIsFocus] = useState(false);
 	const searchInputRef = useRef<HTMLInputElement>(null);
 
 	const fetchLocale = async () => {
@@ -37,17 +37,11 @@ const MainSearchInput = () => {
 
 	const handleEnter = () => {
 		fetchLocale();
-		setIsFocus(false);
+		// setIsFocus(false);
 	};
 
 	return (
 		<>
-			{/* {isFocus && (
-				<div
-					className='fixed z-10 h-full w-full bg-[#00000014]'
-					onClick={() => setIsFocus(false)}
-				></div>
-			)} */}
 			<div className='fixed top-4 left-4 z-10 w-[300px]'>
 				<img
 					src='/searchIcon.svg'
@@ -64,7 +58,7 @@ const MainSearchInput = () => {
 					style={{
 						boxShadow: 'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px',
 					}}
-					onClick={() => setIsFocus(true)}
+					// onClick={() => setIsFocus(true)}
 					onKeyDown={(event) => {
 						if (event.key === 'Enter') handleEnter();
 					}}
