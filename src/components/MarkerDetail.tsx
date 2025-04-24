@@ -19,13 +19,22 @@ const MarkerDetailDrawer = () => {
         ${isDrawerOpen ? `translate-x-0` : 'translate-x-full'}
       `}
 		>
-			<div className='flex h-fit w-full flex-col gap-y-2 rounded-sm bg-[#efefef]'>
+			<div className='flex h-fit w-full flex-col gap-y-2 rounded-sm'>
 				{markerDetailInfo ? (
 					Object.entries(markerDetailInfo).map(([key, value]) => {
+						if (key === 'name')
+							return (
+								<h2
+									key={`${key}-${value}`}
+									className='mt-4 ml-2 border-b border-[#ccc] pb-2 text-[20px] font-bold'
+								>
+									{value}
+								</h2>
+							);
 						return (
 							<div
-								key={key}
-								className='flex items-center gap-x-2 rounded-md  p-2'
+								key={`${key}-${value}`}
+								className='flex items-center gap-x-2 rounded-md p-2'
 							>
 								<div className='w-[100px] text-[14px] font-medium'>
 									{markerDetailMap[`${key}` as keyof MarkerDetail]}

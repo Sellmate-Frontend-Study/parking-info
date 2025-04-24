@@ -4,7 +4,14 @@ import { getLocale } from '@/actions/getLocale';
 import { locationAtom } from '@/atoms/locationAtom';
 import { radiusAtom } from '@/atoms/radiusAtom';
 import { useAtom, useSetAtom } from 'jotai';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import Select from './Select';
+
+const RADIUS_OPTIONS = [
+	{ value: 250, label: '250m' },
+	{ value: 500, label: '500m' },
+	{ value: 1000, label: '1000m' },
+];
 
 const MainSearchInput = () => {
 	const [radius, setRadius] = useAtom(radiusAtom);
@@ -23,6 +30,11 @@ const MainSearchInput = () => {
 		}
 	};
 
+	const selectedRadius = useMemo(
+		() => RADIUS_OPTIONS.find((option) => option.value === radius) || RADIUS_OPTIONS[0],
+		[radius]
+	);
+
 	const handleEnter = () => {
 		fetchLocale();
 		setIsFocus(false);
@@ -30,12 +42,12 @@ const MainSearchInput = () => {
 
 	return (
 		<>
-			{isFocus && (
+			{/* {isFocus && (
 				<div
 					className='fixed z-10 h-full w-full bg-[#00000014]'
 					onClick={() => setIsFocus(false)}
 				></div>
-			)}
+			)} */}
 			<div className='fixed top-4 left-4 z-10 w-[300px]'>
 				<img
 					src='/searchIcon.svg'
@@ -58,23 +70,16 @@ const MainSearchInput = () => {
 					}}
 				/>
 			</div>
-			{isFocus && (
-				<div className='fixed top-4 left-[332px] z-10 w-[200px]'>
-					<div className='flex items-center gap-4 rounded-md border border-[#00000014] bg-white p-2 text-[#222]'>
-						<span className='text-[13px]'>반경</span>
-						<select
-							value={`${radius}`}
-							onChange={(value) => {
-								setRadius(Number(value.target.value));
-							}}
-						>
-							<option value='250'>250m</option>
-							<option value='500'>500m</option>
-							<option value='1000'>1000m</option>
-						</select>
-					</div>
-				</div>
-			)}
+
+			<div className='fixed top-4 left-[332px] z-10'>
+				<Select
+					options={RADIUS_OPTIONS}
+					value={selectedRadius}
+					onChange={(option) => {
+						setRadius(+option.value);
+					}}
+				/>
+			</div>
 		</>
 	);
 };
