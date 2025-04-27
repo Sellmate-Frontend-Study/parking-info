@@ -1,6 +1,5 @@
-
 import type { Metadata } from 'next';
-import '../../public/globals.css';
+import '../styles/globals.css';
 import localFont from 'next/font/local';
 import clsx from 'clsx';
 import { Provider } from 'jotai';

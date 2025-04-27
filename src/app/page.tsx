@@ -1,7 +1,6 @@
 import Header from '@/components/Header';
 import KakaoMap from '@/components/KakaoMap';
 import MarkerTypeNotice from '@/components/MarkerTypeNotice';
-import ParkInfoDetail from '@/components/ParkInfoDetail';
 import ParkInfoLoader from '@/components/ParkInfoLoader';
 
 const Home = () => {
@@ -10,7 +9,6 @@ const Home = () => {
 			<KakaoMap />
 			<Header />
 			<MarkerTypeNotice />
-			<ParkInfoDetail />
 			<ParkInfoLoader />
 		</div>
 	);

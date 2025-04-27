@@ -27,6 +27,8 @@ const KakaoMap = () => {
 	const [location] = useAtom(locationAtom);
 	const [radius] = useAtom(radiusAtom);
 
+	console.log(parkInfos.map((info) => info.PKLT_KND));
+
 	const { initMap, map, setMarkersFromData, setCirclePosition } = useKakaoMap();
 
 	useEffect(() => {

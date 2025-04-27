@@ -2,14 +2,13 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
-import { createRoot } from 'react-dom/client';
-import ParkInfoDetail from '@/components/ParkInfoDetail'; // Ensure this is a default export of a React component
 import { type MarkerData } from '@/types/marker';
 import { type Location } from '@/types/location';
 import { locationAtom } from '@/stores/locationAtom';
 import { radiusAtom } from '@/stores/radiusAtom';
 import { markerInfoAtom } from '@/stores/markerInfoAtom';
 import { showInfoWindowAtom } from '@/stores/showInfoWindowAtom';
+import { parkInfoDetail } from '@/components/ParkInfoDetail';
 
 export const useKakaoMap = () => {
 	const [location, setLocation] = useAtom(locationAtom);
@@ -97,14 +96,14 @@ export const useKakaoMap = () => {
 				});
 
 				kakao.maps.event.addListener(marker, 'click', () => {
-					setMarkerInfo(item);
-					setShowInfoWindow(true);
+					// setMarkerInfo(item);
+					// setShowInfoWindow(true);
 					infoWindowRef.current?.close();
 
-					// const iwContent = document.createElement('div');
+					const iwContent = parkInfoDetail(item);
 					// createRoot(iwContent).render(<ParkInfoDetail />);
-					// infoWindowRef.current!.setContent(iwContent);
-					// infoWindowRef.current!.open(map, marker);
+					infoWindowRef.current!.setContent(iwContent);
+					infoWindowRef.current!.open(map, marker);
 				});
 
 				return marker;
