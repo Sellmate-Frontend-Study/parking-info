@@ -27,22 +27,22 @@ const KakaoMap = () => {
 	const [location] = useAtom(locationAtom);
 	const [radius] = useAtom(radiusAtom);
 
-	console.log(parkInfos.map((info) => info.PKLT_KND));
-
-	const { initMap, map, setMarkersFromData, setCirclePosition } = useKakaoMap();
+	const { initMap, map, setMarkersFromData, setCirclePosition, setMapPosition } = useKakaoMap();
 
 	useEffect(() => {
 		if (!parkInfos || !map) return;
 
-		const targetParkInfos = parkInfos.filter((parkInfo) => {
-			const distance = calculateHaversineDistance({
-				lat1: location.latitude,
-				lng1: location.longitude,
-				lat2: parkInfo.LAT,
-				lng2: parkInfo.LOT,
-			});
-			return distance <= radius;
-		});
+		const targetParkInfos = !radius
+			? parkInfos
+			: parkInfos.filter((parkInfo) => {
+					const distance = calculateHaversineDistance({
+						lat1: location.latitude,
+						lng1: location.longitude,
+						lat2: parkInfo.LAT,
+						lng2: parkInfo.LOT,
+					});
+					return distance <= radius;
+				});
 
 		const markerData = targetParkInfos.map((parkInfo) => {
 			const realTimeInfo = parkingInfos?.find(
@@ -66,6 +66,10 @@ const KakaoMap = () => {
 
 		setMarkersFromData(markerData);
 	}, [map, location, parkInfos, parkingInfos, radius]);
+
+	useEffect(() => {
+		setMapPosition();
+	}, [location]);
 
 	useEffect(() => {
 		if (!map) return;

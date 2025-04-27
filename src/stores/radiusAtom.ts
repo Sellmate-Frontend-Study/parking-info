@@ -1,3 +1,3 @@
 import { atom } from 'jotai';
 
-export const radiusAtom = atom<number>(250);
+export const radiusAtom = atom<number | null>(null);

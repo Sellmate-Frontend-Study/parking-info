@@ -40,20 +40,24 @@ const SearchBar = () => {
 			className='relative rounded-full shadow-md'
 			onSubmit={handleSubmit}
 		>
-			<input
-				placeholder='Search Map'
-				title='Search input'
-				type='text'
-				className='h-8 w-60 rounded-l-full bg-indigo-600 px-4 text-white  placeholder:text-slate-200 focus:outline-none'
-				onChange={(e) => setSearchValue(e.target.value)}
-			/>
-			<button
-				title='search'
-				type='submit'
-				className='absolute top-1/2  -right-8 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-all hover:bg-indigo-50'
-			>
-				<IoSearch className='text-[20px] text-indigo-600' />
-			</button>
+			<div className='flex w-full flex-nowrap items-center rounded-full bg-indigo-600 py-1 pr-2 pl-4'>
+				<input
+					placeholder='Search Map'
+					title='Search input'
+					type='text'
+					className='w-full text-white placeholder:text-slate-200 focus:outline-none'
+					onChange={(e) => setSearchValue(e.target.value)}
+					autoFocus
+				/>
+
+				<button
+					title='search'
+					type='submit'
+					className='cursor-pointer'
+				>
+					<IoSearch className='text-[20px] text-white' />
+				</button>
+			</div>
 		</form>
 	);
 };

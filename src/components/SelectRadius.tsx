@@ -33,8 +33,8 @@ const RADIUS_OPTIONS: SelectOption[] = [
 	},
 ];
 
-const SelectRadius = () => {
-	const [selectedValue, setSelectedValue] = useState<SelectOption>(RADIUS_OPTIONS[3]);
+const SelectRadius = ({ className = '' }: { className?: string }) => {
+	const [selectedValue, setSelectedValue] = useState<SelectOption | null>(null);
 	const [, setRadius] = useAtom(radiusAtom);
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -42,15 +42,16 @@ const SelectRadius = () => {
 	};
 
 	useEffect(() => {
-		setRadius(selectedValue.value as number);
+		setRadius((selectedValue?.value as number) || null);
 	}, [selectedValue]);
 
 	return (
 		<Select
 			options={RADIUS_OPTIONS}
 			value={selectedValue}
-			className='w-24'
+			className={`w-26 ${className}`}
 			onChange={setSelectedValue}
+			placeholder='반경 검색'
 		/>
 	);
 };

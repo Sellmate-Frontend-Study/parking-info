@@ -48,15 +48,17 @@ export const useKakaoMap = () => {
 			infoWindowRef.current = new kakao.maps.InfoWindow({ removable: true });
 
 			// circle
-			const kakaoCircle = new kakao.maps.Circle({
-				center,
-				radius: radius,
-				strokeColor: '#75B8FA',
-				fillColor: '#CFE7FF',
-				fillOpacity: 0.3,
-			});
-			kakaoCircle.setMap(kakaoMap);
-			setCircle(kakaoCircle);
+			if (radius) {
+				const kakaoCircle = new kakao.maps.Circle({
+					center,
+					radius: radius,
+					strokeColor: '#75B8FA',
+					fillColor: '#CFE7FF',
+					fillOpacity: 0.3,
+				});
+				kakaoCircle.setMap(kakaoMap);
+				setCircle(kakaoCircle);
+			}
 
 			// map drag event
 			kakao.maps.event.addListener(kakaoMap, 'dragend', () => {
@@ -67,7 +69,7 @@ export const useKakaoMap = () => {
 	};
 
 	const setCirclePosition = useCallback(() => {
-		if (!map || !circle) return;
+		if (!map || !circle || !radius) return;
 
 		const center = newLatLng(location);
 
@@ -75,6 +77,13 @@ export const useKakaoMap = () => {
 		circle.setRadius(radius);
 		map.panTo(center);
 	}, [circle, location, map, radius]);
+
+	const setMapPosition = useCallback(() => {
+		if (!map) return;
+
+		const center = newLatLng(location);
+		setLocation({ latitude: center.getLat(), longitude: center.getLng() });
+	}, [location, map]);
 
 	const setMarkersFromData = useCallback(
 		(data: MarkerData[]) => {
@@ -96,12 +105,9 @@ export const useKakaoMap = () => {
 				});
 
 				kakao.maps.event.addListener(marker, 'click', () => {
-					// setMarkerInfo(item);
-					// setShowInfoWindow(true);
 					infoWindowRef.current?.close();
 
 					const iwContent = parkInfoDetail(item);
-					// createRoot(iwContent).render(<ParkInfoDetail />);
 					infoWindowRef.current!.setContent(iwContent);
 					infoWindowRef.current!.open(map, marker);
 				});
@@ -120,5 +126,6 @@ export const useKakaoMap = () => {
 		initMap,
 		setMarkersFromData,
 		setCirclePosition,
+		setMapPosition,
 	};
 };

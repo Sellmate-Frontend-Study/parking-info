@@ -4,7 +4,6 @@ import { FaPhone, FaLocationDot } from 'react-icons/fa6';
 import { IoTime } from 'react-icons/io5';
 import { markerInfoAtom } from '@/stores/markerInfoAtom';
 import { useAtom } from 'jotai';
-import Hr from '@/components/Hr';
 import { MdAddLocationAlt } from 'react-icons/md';
 import { TbCurrencyWon } from 'react-icons/tb';
 import { insertColon } from '@/utils/insertColon';
@@ -77,7 +76,7 @@ export const parkInfoDetail = (data: MarkerData) => {
 						</ul>
 					</section>
 
-					<Hr />
+					<hr />
 
 					<section>
 						<div class='title'>
@@ -102,7 +101,7 @@ export const parkInfoDetail = (data: MarkerData) => {
 						</ul>
 					</section>
 
-					<Hr />
+					<hr />
 
 					<section>
 						<div class='title'>
