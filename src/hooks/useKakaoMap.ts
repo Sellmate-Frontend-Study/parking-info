@@ -102,6 +102,11 @@ const useKakaoMap = () => {
 		[map]
 	);
 
+	const resetMarkers = () => {
+		markerClusterRef.current?.clear(); 
+	};
+	
+
 	useEffect(() => {
 		setCirclePosition();
 	}, [centerLocation, setCirclePosition]);
@@ -112,6 +117,7 @@ const useKakaoMap = () => {
 		centerLocation,
 		initMap,
 		setMarker,
+		resetMarkers,
 		setCenterPosition,
 	};
 };

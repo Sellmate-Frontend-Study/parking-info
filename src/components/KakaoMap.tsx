@@ -2,7 +2,6 @@
 
 import useKakaoMap from '@/hooks/useKakaoMap';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
-import { MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
 import { useEffect, useRef, useState } from 'react';
@@ -11,29 +10,22 @@ import Modal from './atoms/Modal';
 import ParkingInfoDetail from './ParkingInfoDetail';
 import { ParkInfo } from '@/types/parkInfo';
 import { ParkingInfo } from '@/types/parkingInfo';
+import { getTrafficState } from '@/utils/getTrafficState';
 
 export interface SelectedPark {
 	parkInfo: ParkInfo;
 	realTimeInfo?: ParkingInfo;
 }
 
-const getTrafficState = (available: number, total: number): MarkerType => {
-	if (total === 1) return 'normal';
-	const ratio = available / total;
-	if (available >= total) return 'jammed';
-	if (ratio > 0.7) return 'congested';
-	if (ratio > 0) return 'smooth';
-	return 'normal';
-};
-
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const { RADIUS, centerLocation, initMap, setMarker } = useKakaoMap();
+	const { RADIUS, centerLocation, initMap, setMarker, resetMarkers } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
 	const [selectedPark, setSelectedPark] = useState<SelectedPark | null>(null);
 
 	useEffect(() => {
 		if (!parkInfos) return;
+		resetMarkers();
 
 		const targetParkInfos = parkInfos.filter((parkInfo) => {
 			const distance = calculateHaversineDistance({
