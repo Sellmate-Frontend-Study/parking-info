@@ -6,7 +6,6 @@ import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance'
 import Script from 'next/script';
 import { useEffect, useRef, useState } from 'react';
 import SearchBar from './SearchBar';
-import Modal from './atoms/Modal';
 import ParkingInfoDetail from './ParkingInfoDetail';
 import { ParkInfo } from '@/types/parkInfo';
 import { ParkingInfo } from '@/types/parkingInfo';
@@ -21,7 +20,6 @@ const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
 	const { RADIUS, centerLocation, initMap, setMarker, resetMarkers } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
-	const [selectedPark, setSelectedPark] = useState<SelectedPark | null>(null);
 
 	useEffect(() => {
 		if (!parkInfos) return;
@@ -50,16 +48,15 @@ const KakaoMap = () => {
 				lat: parkInfo.LAT,
 				lng: parkInfo.LOT,
 				state,
-				clickEvent: () => {
-					setSelectedPark({ parkInfo, realTimeInfo });
-				},
+				markInfo: (
+					<ParkingInfoDetail
+						parkInfo={parkInfo}
+						realTimeInfo={realTimeInfo}
+					/>
+				),
 			});
 		});
 	}, [centerLocation, parkInfos, parkingInfos, RADIUS, setMarker]);
-
-	const handleCloseModal = () => {
-		setSelectedPark(null);
-	};
 
 	return (
 		<>
@@ -72,18 +69,6 @@ const KakaoMap = () => {
 				ref={mapRef}
 				className='h-full w-full'
 			></div>
-
-			{selectedPark && (
-				<Modal
-					isOpen={!!selectedPark}
-					onClose={handleCloseModal}
-				>
-					<ParkingInfoDetail
-						parkInfo={selectedPark.parkInfo}
-						realTimeInfo={selectedPark.realTimeInfo}
-					/>
-				</Modal>
-			)}
 		</>
 	);
 };

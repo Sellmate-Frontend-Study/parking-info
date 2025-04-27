@@ -3,7 +3,7 @@ import { SelectedPark } from './KakaoMap';
 
 const ParkingInfoDetail = ({ parkInfo, realTimeInfo }: SelectedPark) => {
 	return (
-		<div className='flex flex-col gap-4'>
+		<div className='z-50 flex flex-col gap-4'>
 			<div className='rounded-lg bg-white p-4'>
 				<h3 className='text-xl font-bold text-green-950'>{parkInfo.PKLT_NM || '주차장 정보'}</h3>
 				<p className='mt-1 text-sm text-gray-600'>{parkInfo.ADDR}</p>
