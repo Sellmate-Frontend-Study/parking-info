@@ -4,9 +4,13 @@ import { locationAtom } from '@/stores/locationAtom';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { IoSearch } from 'react-icons/io5';
+import { useParkInfoData } from '@/hooks/useParkInfoData';
+import { useKakaoMap } from '@/hooks/useKakaoMap';
 
 const SearchBar = () => {
 	const [, setLocation] = useAtom(locationAtom);
+	const { getParkInfoData } = useParkInfoData();
+	const { setMarkersFromData } = useKakaoMap();
 
 	const [searchValue, setSearchValue] = useState<string>('');
 
@@ -33,6 +37,8 @@ const SearchBar = () => {
 		const latitude = parseFloat(y);
 		const longitude = parseFloat(x);
 		setLocation({ latitude, longitude });
+
+		setMarkersFromData(getParkInfoData());
 	};
 
 	return (

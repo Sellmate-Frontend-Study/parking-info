@@ -78,13 +78,6 @@ export const useKakaoMap = () => {
 		map.panTo(center);
 	}, [circle, location, map, radius]);
 
-	const setMapPosition = useCallback(() => {
-		if (!map) return;
-
-		const center = newLatLng(location);
-		setLocation({ latitude: center.getLat(), longitude: center.getLng() });
-	}, [location, map]);
-
 	const setMarkersFromData = useCallback(
 		(data: MarkerData[]) => {
 			if (!map || !markerClusterRef.current || !infoWindowRef.current) return;
@@ -120,12 +113,29 @@ export const useKakaoMap = () => {
 		[map]
 	);
 
+	const getMapBounds = () => {
+		if (!map) return;
+
+		const bounds = map.getBounds();
+		const sw = bounds.getSouthWest(); // 남서쪽 (왼쪽 아래) 좌표
+		const ne = bounds.getNorthEast(); // 북동쪽 (오른쪽 위) 좌표
+
+		const currentMapBounds = {
+			north: ne.getLat(),
+			south: sw.getLat(),
+			east: ne.getLng(),
+			west: sw.getLng(),
+		};
+		console.log('currentMapBounds : ', currentMapBounds);
+		return currentMapBounds;
+	};
+
 	return {
 		map,
 		location,
 		initMap,
 		setMarkersFromData,
 		setCirclePosition,
-		setMapPosition,
+		getMapBounds,
 	};
 };

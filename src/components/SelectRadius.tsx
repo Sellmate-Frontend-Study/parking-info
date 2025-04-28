@@ -6,7 +6,7 @@ import { radiusAtom } from '@/stores/radiusAtom';
 import Select from '@/components/Select';
 import { SelectOption } from '@/types/selectOption';
 
-const RADIUS_OPTIONS: SelectOption[] = [
+export const RADIUS_OPTIONS: SelectOption[] = [
 	{
 		label: '100m',
 		value: 50,
@@ -34,12 +34,14 @@ const RADIUS_OPTIONS: SelectOption[] = [
 ];
 
 const SelectRadius = ({ className = '' }: { className?: string }) => {
-	const [selectedValue, setSelectedValue] = useState<SelectOption | null>(null);
-	const [, setRadius] = useAtom(radiusAtom);
+	const [radius, setRadius] = useAtom(radiusAtom);
+	const [selectedValue, setSelectedValue] = useState<SelectOption | null>(
+		RADIUS_OPTIONS.find((opt) => opt.value === radius) || null
+	);
 
-	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		setRadius(Number(e.target.value));
-	};
+	// const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+	// 	setRadius(Number(e.target.value));
+	// };
 
 	useEffect(() => {
 		setRadius((selectedValue?.value as number) || null);

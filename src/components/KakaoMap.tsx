@@ -27,7 +27,7 @@ const KakaoMap = () => {
 	const [location] = useAtom(locationAtom);
 	const [radius] = useAtom(radiusAtom);
 
-	const { initMap, map, setMarkersFromData, setCirclePosition, setMapPosition } = useKakaoMap();
+	const { initMap, map, setMarkersFromData, setCirclePosition } = useKakaoMap();
 
 	useEffect(() => {
 		if (!parkInfos || !map) return;
@@ -66,10 +66,6 @@ const KakaoMap = () => {
 
 		setMarkersFromData(markerData);
 	}, [map, location, parkInfos, parkingInfos, radius]);
-
-	useEffect(() => {
-		setMapPosition();
-	}, [location]);
 
 	useEffect(() => {
 		if (!map) return;
