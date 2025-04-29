@@ -1,4 +1,4 @@
-import KakaoMap from '@/components/KakaoMap';
+import KakaoMap from '@/components/atoms/KakaoMap';
 import MarkerTypeNotice from '@/components/MarkerTypeNotice';
 import { ParkInfoProvider } from '@/providers/ParkInfoProvider';
 
