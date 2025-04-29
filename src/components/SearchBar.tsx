@@ -4,7 +4,7 @@ import { searchKeyword } from '@/actions/searchKeyword';
 import { useState } from 'react';
 import { useSetAtom } from 'jotai';
 import { setCenterPositionAtom } from '@/store/mapAtoms';
-import SearchIcon from './SearchIcon';
+import SearchIcon from './icon/SearchIcon';
 
 const SearchBar = () => {
 	const [keyword, setKeyword] = useState('');

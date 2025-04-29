@@ -1,5 +1,5 @@
 import Chip from '@/components/atoms/Chip';
-import { SelectedPark } from './KakaoMap';
+import { SelectedPark } from './atoms/KakaoMap';
 
 const ParkingInfoDetail = ({ parkInfo, realTimeInfo }: SelectedPark) => {
 	return (
@@ -13,7 +13,6 @@ const ParkingInfoDetail = ({ parkInfo, realTimeInfo }: SelectedPark) => {
 					{parkInfo.TELNO && <Chip label={parkInfo.TELNO} />}
 				</div>
 			</div>
-
 			<div className='p-4 text-black'>
 				<h4 className='mb-3 font-semibold'>주차 정보</h4>
 				<div className='space-y-2'>
