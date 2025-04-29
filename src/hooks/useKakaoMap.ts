@@ -28,6 +28,13 @@ const useKakaoMap = () => {
 		return new kakao.maps.LatLng(latitude, longitude);
 	};
 
+	const closeInfoWindow = () => {
+		if (infoWindowRef.current) {
+			infoWindowRef.current.close();
+			infoWindowRef.current = null;
+		}
+	};
+
 	const initMap = (mapElement: HTMLElement) => {
 		kakao.maps.load(() => {
 			const center = newLatLng({ latitude: centerLocation.lat, longitude: centerLocation.lng });
@@ -56,8 +63,12 @@ const useKakaoMap = () => {
 			setCircle(kakaoCircle);
 
 			kakao.maps.event.addListener(kakaoMap, 'dragend', () => {
+				closeInfoWindow()
 				const newCenter = kakaoMap.getCenter();
 				setCenterLocation({ lat: newCenter.getLat(), lng: newCenter.getLng() });
+			});
+			kakao.maps.event.addListener(kakaoMap, 'click', () => {
+				closeInfoWindow()
 			});
 		});
 	};
@@ -104,10 +115,7 @@ const useKakaoMap = () => {
 			});
 
 			kakao.maps.event.addListener(marker, 'click', ()=>{
-				if (infoWindowRef.current) {
-					infoWindowRef.current.close();
-				}
-	
+				closeInfoWindow();
 				infoWindow.open(map, marker);               
 				infoWindowRef.current = infoWindow;   
 			});

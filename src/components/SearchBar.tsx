@@ -29,7 +29,7 @@ const SearchBar = () => {
 	};
 
 	return (
-		<div className='absolute top-6 left-1/2 z-10 flex w-80 -translate-x-1/2 transform items-center overflow-hidden rounded-full border-none bg-white text-sm text-gray-700'>
+		<div className='absolute bottom-6 left-1/2 z-10 flex w-80 -translate-x-1/2 transform items-center overflow-hidden rounded-full border-none bg-white text-sm text-gray-700'>
 			<input
 				type='text'
 				value={keyword}
