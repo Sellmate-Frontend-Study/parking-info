@@ -10,6 +10,7 @@ import ParkingInfoDetail from '../ParkingInfoDetail';
 import { ParkInfo } from '@/types/parkInfo';
 import { ParkingInfo } from '@/types/parkingInfo';
 import { getTrafficState } from '@/utils/getTrafficState';
+import ParkingList from '../ParkingList';
 
 export interface SelectedPark {
 	parkInfo: ParkInfo;
@@ -18,6 +19,7 @@ export interface SelectedPark {
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
+	const [parkInfosInCircle, setParkInfosInCircle] = useState<ParkInfo[]>([]);
 	const { RADIUS, centerLocation, initMap, setMarker, resetMarkers } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
 
@@ -34,6 +36,7 @@ const KakaoMap = () => {
 			});
 			return distance <= RADIUS;
 		});
+		setParkInfosInCircle(targetParkInfos);
 
 		targetParkInfos.forEach((parkInfo) => {
 			const realTimeInfo = parkingInfos?.find(
@@ -65,6 +68,7 @@ const KakaoMap = () => {
 				onLoad={() => mapRef.current && initMap(mapRef.current)}
 			/>
 			<SearchBar />
+			{parkInfosInCircle.length > 0 && <ParkingList parkInfosInCircle={parkInfosInCircle} />}
 			<div
 				ref={mapRef}
 				className='h-full w-full'
