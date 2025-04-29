@@ -2,27 +2,28 @@
 
 import { MarkerType } from '@/types/marker';
 import { Location } from '@/types/location';
-import { ReactNode, use, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { centerLocationAtom, radiusAtom, mapAtom } from '@/store/mapAtoms';
 import { createHTMLElementFromReactNode } from '@/utils/createHTMLElementFromReactNode';
 
 interface SetMarkerOptions {
+	key: string;
 	lat: number;
 	lng: number;
 	state: MarkerType;
 	markInfo: ReactNode
 }
 
-const useKakaoMap = () => {
+const useKakaoMap = ({ onMarkerClick }: { onMarkerClick?: (key: string) => void } ) => {
 	const [RADIUS] = useAtom(radiusAtom);
 	const setMapAtom = useSetAtom(mapAtom);
 	const [centerLocation, setCenterLocation] = useAtom(centerLocationAtom);
 	const [map, setMap] = useState<kakao.maps.Map | null>(null);
 	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
+	const markerMapRef = useRef(new Map());
 	const markerClusterRef = useRef<kakao.maps.MarkerClusterer | null>(null);
 	const infoWindowRef = useRef<kakao.maps.InfoWindow | null>(null);
-
 
 	const newLatLng = ({ latitude, longitude }: Location) => {
 		return new kakao.maps.LatLng(latitude, longitude);
@@ -94,7 +95,7 @@ const useKakaoMap = () => {
 	);
 
 	const setMarker = useCallback(
-		({ lat, lng, state, markInfo }: SetMarkerOptions) => {
+		({ key, lat, lng, state, markInfo }: SetMarkerOptions) => {
 			if (!map || !markerClusterRef.current) return;
 
 			const markerImage = new kakao.maps.MarkerImage(
@@ -105,7 +106,8 @@ const useKakaoMap = () => {
 
 			const infoWindow = new kakao.maps.InfoWindow({
 				content : createHTMLElementFromReactNode(markInfo),
-				removable : true
+				removable : true,
+				zIndex: 999,
 		});
 
 			const marker = new kakao.maps.Marker({
@@ -114,16 +116,30 @@ const useKakaoMap = () => {
 				clickable: true,
 			});
 
+			markerMapRef.current.set(key, { marker, infoWindow });
 			kakao.maps.event.addListener(marker, 'click', ()=>{
 				closeInfoWindow();
 				infoWindow.open(map, marker);               
 				infoWindowRef.current = infoWindow;   
+				onMarkerClick?.(key);
 			});
 
 			markerClusterRef.current.addMarker(marker);
 		},
 		[map]
 	);
+
+	const openInfoWindow = useCallback((key: string) => {
+    const markerInfo = markerMapRef.current.get(key);
+		console.log('markerInfo', markerInfo.infoWindow);
+    if (!markerInfo || !map) return;
+
+    closeInfoWindow();
+    markerInfo.infoWindow.open(map, markerInfo.marker);
+    infoWindowRef.current = markerInfo.infoWindow;
+    onMarkerClick?.(key);
+
+  }, [map, onMarkerClick]);
 
 	const resetMarkers = () => {
 		markerClusterRef.current?.clear(); 
@@ -141,6 +157,7 @@ const useKakaoMap = () => {
 		setMarker,
 		resetMarkers,
 		setCenterPosition,
+		openInfoWindow
 	};
 };
 

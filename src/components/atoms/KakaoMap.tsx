@@ -19,8 +19,11 @@ export interface SelectedPark {
 
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
+	const [selectedKey, setSelectedKey] = useState<string | null>(null);
 	const [parkInfosInCircle, setParkInfosInCircle] = useState<ParkInfo[]>([]);
-	const { RADIUS, centerLocation, initMap, setMarker, resetMarkers } = useKakaoMap();
+	const { RADIUS, centerLocation, initMap, setMarker, resetMarkers, openInfoWindow } = useKakaoMap({
+		onMarkerClick: (key) => setSelectedKey(key),
+	});
 	const { parkInfos, parkingInfos } = useParkInfo();
 
 	useEffect(() => {
@@ -47,7 +50,9 @@ const KakaoMap = () => {
 				? getTrafficState(realTimeInfo.NOW_PRK_VHCL_CNT, realTimeInfo.TPKCT)
 				: 'normal';
 
+			const key = `${parkInfo.LAT}-${parkInfo.LOT}`;
 			setMarker({
+				key,
 				lat: parkInfo.LAT,
 				lng: parkInfo.LOT,
 				state,
@@ -68,7 +73,16 @@ const KakaoMap = () => {
 				onLoad={() => mapRef.current && initMap(mapRef.current)}
 			/>
 			<SearchBar />
-			{parkInfosInCircle.length > 0 && <ParkingList parkInfosInCircle={parkInfosInCircle} />}
+			{parkInfosInCircle.length > 0 && (
+				<ParkingList
+					parkInfosInCircle={parkInfosInCircle}
+					selectedKey={selectedKey}
+					parkingClick={(parkInfo) => {
+						const key = `${parkInfo.LAT}-${parkInfo.LOT}`;
+						openInfoWindow(key);
+					}}
+				/>
+			)}
 			<div
 				ref={mapRef}
 				className='h-full w-full'
