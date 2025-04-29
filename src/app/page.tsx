@@ -3,6 +3,7 @@ import MarkerTypeNotice from '@/components/MarkerTypeNotice';
 import MainSearchInput from '@/components/MainSearchInput';
 import { ParkInfoProvider } from '@/providers/ParkInfoProvider';
 import MarkerDetail from '@/components/MarkerDetail';
+import SearchListDrawer from '@/components/SearchListDrawer';
 
 const Home = () => {
 	return (
@@ -11,7 +12,8 @@ const Home = () => {
 				<MainSearchInput />
 				<KakaoMap />
 				<MarkerTypeNotice />
-				<MarkerDetail />
+				{/* <MarkerDetail /> */}
+				<SearchListDrawer />
 			</ParkInfoProvider>
 		</div>
 	);

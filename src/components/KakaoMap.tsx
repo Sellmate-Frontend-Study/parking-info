@@ -2,11 +2,12 @@
 
 import { locationAtom } from '@/atoms/locationAtom';
 import { radiusAtom } from '@/atoms/radiusAtom';
+import { SearchAtom } from '@/atoms/searchAtom';
 import useKakaoMap from '@/hooks/useKakaoMap';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
 import { MarkerDetail, MarkerType } from '@/types/marker';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import Script from 'next/script';
 import { useEffect, useRef } from 'react';
 
@@ -25,6 +26,7 @@ const KakaoMap = () => {
 	const { parkInfos, parkingInfos } = useParkInfo();
 	const centerLocation = useAtomValue(locationAtom);
 	const radius = useAtomValue(radiusAtom);
+	const setSearchList = useSetAtom(SearchAtom);
 
 	useEffect(() => {
 		if (!parkInfos) return;
@@ -66,6 +68,9 @@ const KakaoMap = () => {
 			return { lat: parkInfo.LAT, lng: parkInfo.LOT, state, rawData };
 		});
 
+		console.log(markerData);
+
+		setSearchList(markerData);
 		setMarkersFromData(markerData);
 	}, [centerLocation, parkInfos, parkingInfos]);
 

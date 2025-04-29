@@ -6,6 +6,8 @@ import { radiusAtom } from '@/atoms/radiusAtom';
 import { useAtom, useSetAtom } from 'jotai';
 import { useMemo, useRef, useState } from 'react';
 import Select from './Select';
+import { MarkerDrawerAtom } from '@/atoms/markerAtom';
+import { SearchDrawerAtom } from '@/atoms/searchAtom';
 
 const RADIUS_OPTIONS = [
 	{ value: 250, label: '250m' },
@@ -19,6 +21,7 @@ const MainSearchInput = () => {
 	const [query, setQuery] = useState('');
 	// const [isFocus, setIsFocus] = useState(false);
 	const searchInputRef = useRef<HTMLInputElement>(null);
+	const [isDrawerOpen, setIsDrawerOpen] = useAtom(SearchDrawerAtom);
 
 	const fetchLocale = async () => {
 		try {
@@ -54,14 +57,15 @@ const MainSearchInput = () => {
 					onInput={(event) => {
 						setQuery(event.currentTarget.value);
 					}}
-					className='rounded-1 h-8 w-full rounded-md bg-white pl-4 text-[15px] text-[#222] focus:outline-none'
-					style={{
-						boxShadow: 'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px',
-					}}
+					className='rounded-1 h-8 w-full rounded-md border border-[#ddd] bg-white pl-4 text-[15px] text-[#222] focus:outline-none'
+					// style={{
+					// 	boxShadow: 'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px',
+					// }}
 					// onClick={() => setIsFocus(true)}
 					onKeyDown={(event) => {
 						if (event.key === 'Enter') handleEnter();
 					}}
+					onFocus={() => setIsDrawerOpen(true)}
 				/>
 			</div>
 

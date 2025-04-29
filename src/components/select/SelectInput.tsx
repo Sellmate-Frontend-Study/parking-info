@@ -31,7 +31,7 @@ const SelectInput = ({
 		<div
 			id={`s-portal--${selectId}`}
 			className={clsx(
-				'relative flex h-8 cursor-pointer flex-nowrap items-center rounded-lg bg-white pl-3 shadow-md',
+				'relative flex h-8 cursor-pointer flex-nowrap items-center rounded-lg border border-[#ddd] bg-white pl-3',
 				disabled && '!cursor-not-allowed !bg-gray-300',
 				className
 			)}

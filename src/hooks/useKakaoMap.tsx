@@ -2,11 +2,13 @@
 
 import { MarkerType } from '@/types/marker';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { locationAtom } from '@/atoms/locationAtom';
 import { radiusAtom } from '@/atoms/radiusAtom';
 import { newLatLng } from '@/util/kakaoLocation';
-import { MarkerDetailAtom, MarkerDrawerAtom } from '@/atoms/markerAtom';
+import { MarkerDetailAtom } from '@/atoms/markerAtom';
+import { renderToString } from 'react-dom/server';
+import ParkInfoDetail from '@/components/ParkInfoDetail';
 
 const useKakaoMap = () => {
 	const [map, setMap] = useState<kakao.maps.Map | null>(null);
@@ -14,8 +16,7 @@ const useKakaoMap = () => {
 	const markerClusterRef = useRef<kakao.maps.MarkerClusterer | null>(null);
 	const [centerLocation, setCenterLocation] = useAtom(locationAtom);
 	const radius = useAtomValue(radiusAtom);
-	const setMarkerDetail = useSetAtom(MarkerDetailAtom);
-	const openMarkerDetailDrawer = useSetAtom(MarkerDrawerAtom);
+	const [markerDetail, setMarkerDetail] = useAtom(MarkerDetailAtom);
 
 	const initMap = (mapElement: HTMLElement) => {
 		kakao.maps.load(() => {
@@ -60,8 +61,43 @@ const useKakaoMap = () => {
 
 	const markerEventListener = (targetMarker: kakao.maps.Marker, markerData: any) => {
 		window.kakao.maps.event.addListener(targetMarker, 'click', function () {
-			openMarkerDetailDrawer(true);
+			if (!map) return;
 			setMarkerDetail(markerData);
+			const previousOverlay = document.getElementById('overlayContainer');
+			if (previousOverlay) {
+				previousOverlay.remove();
+			}
+
+			const newLatlng = targetMarker.getPosition();
+			const overlayContent = <ParkInfoDetail />;
+			// 컴포넌트를 string으로 전환 후 HTMLElement에 삽입
+			const overlayContainer = document.createElement('div');
+			overlayContainer.id = 'overlayContainer';
+			overlayContainer.style.position = 'absolute';
+			overlayContainer.style.width = '420px';
+			overlayContainer.style.height = '320px';
+			overlayContainer.style.left = '-210px';
+			overlayContainer.style.bottom = '30px';
+			overlayContainer.innerHTML = renderToString(overlayContent);
+			overlayContainer
+				.querySelector('#overlayCloseBtn')
+				?.addEventListener('click', () => overlayContainer.remove());
+
+			// 커스텀 오버레이 생성
+			new kakao.maps.CustomOverlay({
+				map,
+				clickable: true,
+				position: newLatlng,
+				content: overlayContainer,
+				zIndex: 10000,
+			});
+
+			const imageSrc = `/marker_selected.svg`;
+			const imageSize = new kakao.maps.Size(30, 32.44);
+			const imageOption = { offset: new kakao.maps.Point(15, 32.44) };
+			const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+			targetMarker.setImage(markerImage);
+			targetMarker.setMap(map);
 		});
 	};
 
@@ -72,6 +108,8 @@ const useKakaoMap = () => {
 			markerClusterRef.current.clear();
 
 			const newMarkers: kakao.maps.Marker[] = data.map(({ lat, lng, state, rawData }) => {
+				console.log(markerDetail);
+
 				const imageSrc = `/marker_${state}.svg`;
 				const imageSize = new kakao.maps.Size(30, 32.44);
 				const imageOption = { offset: new kakao.maps.Point(15, 32.44) };

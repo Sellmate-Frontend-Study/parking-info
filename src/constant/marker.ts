@@ -14,3 +14,6 @@ export const markerDetailMap: Record<keyof MarkerDetail, string> = {
 	price: '기본 주차 요금',
 	parkingHour: '기본 주차 시간',
 };
+
+export const ICON_STYLE = 'h-3 w-3 text-indigo-600';
+export const DESCRIPTION_STYLE = 'flex-1 text-[12px] text-wrap';
