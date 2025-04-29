@@ -6,7 +6,7 @@ export const getLocalAddress = async (address: string): Promise<LocalAddress[]> 
 	const apiKey = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY;
 	const apiUrl = process.env.NEXT_PUBLIC_KAKAO_LOCAL_API_URL;
 
-	const response = await fetch(`${apiUrl}?query=${address}`, {
+	const response = await fetch(`${apiUrl}/v2/local/search/keyword?query=${address}`, {
 		headers: {
 			Authorization: `KakaoAK ${apiKey}`,
 		},
