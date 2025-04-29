@@ -23,7 +23,7 @@ const getTrafficState = (available: number, total: number): MarkerType => {
 };
 
 const KakaoMap = () => {
-	const mapRef = useRef<HTMLDivElement>(null);
+	const mapElementRef = useRef<HTMLDivElement>(null);
 	const radius = useAtomValue(radiusAtom);
 	const location = useAtomValue(locationAtom);
 	const { initMap, clearMarkers, setMarker } = useKakaoMap();
@@ -69,10 +69,10 @@ const KakaoMap = () => {
 		<>
 			<Script
 				src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false&libraries=clusterer`}
-				onLoad={() => mapRef.current && initMap(mapRef.current)}
+				onLoad={() => mapElementRef.current && initMap(mapElementRef.current)}
 			/>
 			<div
-				ref={mapRef}
+				ref={mapElementRef}
 				className='h-full w-full'
 			></div>
 			{selectedPark && (
