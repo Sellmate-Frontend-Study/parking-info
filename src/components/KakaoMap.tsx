@@ -4,14 +4,13 @@ import useKakaoMap from '@/hooks/useKakaoMap';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
 import Script from 'next/script';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { radiusAtom } from '@/states/radiusAtom';
 import { locationAtom } from '@/states/locationAtom';
 import { MarkerType } from '@/types/map';
-import Modal from './Modal';
 import ParkInfoDetail from './ParkInfoDetail';
-import { SelectedPark } from '@/types/selectPark';
+import { renderToHtmlElement } from '@/utils/renderComponent';
 
 const getTrafficState = (available: number, total: number): MarkerType => {
 	if (total === 1) return MarkerType.Normal;
@@ -26,9 +25,8 @@ const KakaoMap = () => {
 	const mapElementRef = useRef<HTMLDivElement>(null);
 	const radius = useAtomValue(radiusAtom);
 	const location = useAtomValue(locationAtom);
-	const { initMap, clearMarkers, setMarker } = useKakaoMap();
+	const { initMap, clearMarkers, setMarker, showCustomOverlay, hideCustomOverlay } = useKakaoMap();
 	const { parkInfos, parkingInfos } = useParkInfo();
-	const [selectedPark, setSelectedPark] = useState<SelectedPark | null>(null);
 
 	useEffect(() => {
 		if (!parkInfos) return;
@@ -58,8 +56,15 @@ const KakaoMap = () => {
 				latitude: parkInfo.LAT,
 				longitude: parkInfo.LOT,
 				state: state,
-				clickEvent: () => {
-					setSelectedPark({ info: parkInfo, realTimeInfo: realTimeInfo });
+				clickEvent: (marker: kakao.maps.Marker) => {
+					const content = renderToHtmlElement(
+						<ParkInfoDetail
+							parkInfo={{ info: parkInfo, realTimeInfo: realTimeInfo }}
+							onClose={hideCustomOverlay}
+						/>
+					);
+
+					showCustomOverlay(content, marker);
 				},
 			});
 		});
@@ -75,15 +80,6 @@ const KakaoMap = () => {
 				ref={mapElementRef}
 				className='h-full w-full'
 			></div>
-			{selectedPark && (
-				<Modal>
-					<ParkInfoDetail
-						parkInfo={selectedPark}
-						backdrop={false}
-						onClose={() => setSelectedPark(null)}
-					/>
-				</Modal>
-			)}
 		</>
 	);
 };

@@ -12,5 +12,5 @@ export enum MarkerType {
 
 export interface SetMarker extends Location {
 	state: MarkerType;
-	clickEvent: () => void;
+	clickEvent: (marker: kakao.maps.Marker) => void;
 }
