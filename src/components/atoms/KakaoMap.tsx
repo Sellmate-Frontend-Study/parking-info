@@ -3,6 +3,7 @@
 import useKakaoMap from '@/hooks/useKakaoMap';
 import { useParkInfo } from '@/providers/ParkInfoProvider';
 import { calculateHaversineDistance } from '@/utils/calculateHaversinceDistance';
+import { getParkingKey } from '@/utils/getParkingKey';
 import Script from 'next/script';
 import { useEffect, useRef, useState } from 'react';
 import SearchBar from '../SearchBar';
@@ -50,7 +51,7 @@ const KakaoMap = () => {
 				? getTrafficState(realTimeInfo.NOW_PRK_VHCL_CNT, realTimeInfo.TPKCT)
 				: 'normal';
 
-			const key = `${parkInfo.LAT}-${parkInfo.LOT}`;
+			const key = getParkingKey(parkInfo);
 			setMarker({
 				key,
 				lat: parkInfo.LAT,
@@ -77,10 +78,7 @@ const KakaoMap = () => {
 				<ParkingList
 					parkInfosInCircle={parkInfosInCircle}
 					selectedKey={selectedKey}
-					parkingClick={(parkInfo) => {
-						const key = `${parkInfo.LAT}-${parkInfo.LOT}`;
-						openInfoWindow(key);
-					}}
+					openInfoWindow={openInfoWindow}
 				/>
 			)}
 			<div
