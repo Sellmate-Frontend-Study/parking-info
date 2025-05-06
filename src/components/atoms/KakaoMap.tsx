@@ -25,7 +25,7 @@ const KakaoMap = () => {
 	const { RADIUS, centerLocation, initMap, setMarker, resetMarkers, openInfoWindow } = useKakaoMap({
 		onMarkerClick: (key) => setSelectedKey(key),
 	});
-	const { parkInfos, parkingInfos } = useParkInfo();
+	const { parkInfos, parkingInfos, privateParkInfos } = useParkInfo();
 
 	useEffect(() => {
 		if (!parkInfos) return;
