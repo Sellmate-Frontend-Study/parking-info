@@ -1,14 +1,13 @@
 'use client';
 
-import { MarkerDetailAtom } from '@/atoms/markerAtom';
 import { SearchAtom, SearchDrawerAtom } from '@/atoms/searchAtom';
-import { DESCRIPTION_STYLE, ICON_STYLE, markerDetailMap } from '@/constant/marker';
-import { MarkerDetail } from '@/types/marker';
+import { DESCRIPTION_STYLE, ICON_STYLE } from '@/constant/marker';
 import clsx from 'clsx';
 import { useAtom, useAtomValue } from 'jotai';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BiSolidHome } from 'react-icons/bi';
 import { BsChevronRight, BsFillTelephoneFill } from 'react-icons/bs';
+import Badge from './Badge';
 
 interface SearchListItme {
 	lat: number;
@@ -33,17 +32,39 @@ interface SearchListItme {
 const SearchListDrawer = () => {
 	const searchList = useAtomValue(SearchAtom);
 	const [isDrawerOpen, setIsDrawerOpen] = useAtom(SearchDrawerAtom);
+	const [parkType, setParkType] = useState<'all' | 'public' | 'private'>('public');
+	const isPublicPark = useMemo(() => parkType === 'public', [parkType]);
+	const isPrivatePark = useMemo(() => parkType === 'private', [parkType]);
 
 	return (
 		<div
 			className={`
-        fixed top-0 left-0 z-9 flex h-full w-[420px] border-l border-[rgba(147,147,150,0.3)] bg-[#fefefe]
+        fixed top-0 left-0 z-9 h-full w-[420px] border-l border-[rgba(147,147,150,0.3)] bg-[#fefefe]
         pt-[64px] pb-2 transition-transform duration-300
         ${isDrawerOpen ? `translate-x-0` : '-translate-x-full'}
       `}
 		>
+			<div className='flex w-full gap-2 border-t border-[rgba(147,147,150,0.3)] px-2 py-3'>
+				<Badge
+					label='공영 주차장'
+					className={clsx(
+						'cursor-pointer',
+						isPublicPark ? 'border-indigo-800 bg-indigo-100 text-indigo-800' : ''
+					)}
+					onclick={() => setParkType('public')}
+				/>
+				<Badge
+					label='민영 주차장'
+					className={clsx(
+						'cursor-pointer',
+						isPrivatePark ? 'border-indigo-800 bg-indigo-100 text-indigo-800' : ''
+					)}
+					onclick={() => setParkType('private')}
+				/>
+			</div>
+
 			<div
-				className='flex h-full w-full flex-col gap-y-2 overflow-auto rounded-b-sm p-2'
+				className='flex h-full w-full flex-col gap-y-2 overflow-auto rounded-b-sm p-2 text-[#222]'
 				style={{ boxShadow: `rgba(33, 35, 38, 0.1) 0px 0px 5px 0px;` }}
 			>
 				{searchList.length ? (

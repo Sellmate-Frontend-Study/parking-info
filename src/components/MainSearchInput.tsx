@@ -1,13 +1,14 @@
 'use client';
 
 import { getLocale } from '@/actions/getLocale';
-import { locationAtom } from '@/atoms/locationAtom';
+import { locationAtom, updateLocationWithView } from '@/atoms/locationAtom';
 import { radiusAtom } from '@/atoms/radiusAtom';
 import { useAtom, useSetAtom } from 'jotai';
 import { useMemo, useRef, useState } from 'react';
 import Select from './Select';
 import { MarkerDrawerAtom } from '@/atoms/markerAtom';
 import { SearchDrawerAtom } from '@/atoms/searchAtom';
+import { RiResetRightLine } from 'react-icons/ri';
 
 const RADIUS_OPTIONS = [
 	{ value: 250, label: '250m' },
@@ -19,9 +20,9 @@ const MainSearchInput = () => {
 	const [radius, setRadius] = useAtom(radiusAtom);
 	const setLocation = useSetAtom(locationAtom);
 	const [query, setQuery] = useState('');
-	// const [isFocus, setIsFocus] = useState(false);
 	const searchInputRef = useRef<HTMLInputElement>(null);
-	const [isDrawerOpen, setIsDrawerOpen] = useAtom(SearchDrawerAtom);
+	const setIsDrawerOpen = useSetAtom(SearchDrawerAtom);
+	const updateLocation = useSetAtom(updateLocationWithView);
 
 	const fetchLocale = async () => {
 		try {
@@ -77,6 +78,13 @@ const MainSearchInput = () => {
 						setRadius(+option.value);
 					}}
 				/>
+			</div>
+
+			<div
+				className='-transtlate-x-1/2  fixed top-4 left-1/2 z-10 flex items-center gap-[4px] rounded-full bg-white p-2 px-3 text-[13px] text-[#222] shadow-sm'
+				onClick={() => updateLocation()}
+			>
+				<RiResetRightLine />이 지역 다시 검색
 			</div>
 		</>
 	);

@@ -2,8 +2,8 @@
 
 import { MarkerType } from '@/types/marker';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
-import { locationAtom } from '@/atoms/locationAtom';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { locationAtom, viewLocationAtom } from '@/atoms/locationAtom';
 import { radiusAtom } from '@/atoms/radiusAtom';
 import { newLatLng } from '@/util/kakaoLocation';
 import { MarkerDetailAtom } from '@/atoms/markerAtom';
@@ -15,6 +15,7 @@ const useKakaoMap = () => {
 	const [circle, setCircle] = useState<kakao.maps.Circle | null>(null);
 	const markerClusterRef = useRef<kakao.maps.MarkerClusterer | null>(null);
 	const [centerLocation, setCenterLocation] = useAtom(locationAtom);
+	const setViewLocation = useSetAtom(viewLocationAtom);
 	const radius = useAtomValue(radiusAtom);
 	const [markerDetail, setMarkerDetail] = useAtom(MarkerDetailAtom);
 
@@ -47,7 +48,7 @@ const useKakaoMap = () => {
 
 			kakao.maps.event.addListener(kakaoMap, 'dragend', () => {
 				const newCenter = kakaoMap.getCenter();
-				setCenterLocation({ lat: newCenter.getLat(), lng: newCenter.getLng() });
+				setViewLocation({ lat: newCenter.getLat(), lng: newCenter.getLng() });
 			});
 		});
 	};

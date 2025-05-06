@@ -68,8 +68,6 @@ const KakaoMap = () => {
 			return { lat: parkInfo.LAT, lng: parkInfo.LOT, state, rawData };
 		});
 
-		console.log(markerData);
-
 		setSearchList(markerData);
 		setMarkersFromData(markerData);
 	}, [centerLocation, parkInfos, parkingInfos]);
