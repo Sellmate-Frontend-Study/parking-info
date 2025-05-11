@@ -21,7 +21,7 @@ const ParkInfoDetail = ({ parkInfo, onClose = () => {} }: ParkInfoDetailProps) =
 					</div>
 				</div>
 				<div className='mb-3 flex flex-row gap-2'>
-					<Location className='text-gray-400' />
+					<Location className='h-[16px] w-[16px] text-gray-400' />
 					<span className='text-sm text-black'>{parkInfo.info.ADDR}</span>
 				</div>
 				<div className='mb-3 flex flex-row gap-2'>
@@ -37,7 +37,6 @@ const ParkInfoDetail = ({ parkInfo, onClose = () => {} }: ParkInfoDetailProps) =
 					<div className='mb-4'>
 						<span className='text-xl font-bold text-black'>주차 정보</span>
 					</div>
-					a
 					<div className='mb-3 flex flex-col gap-2'>
 						<span className='text-sm text-black'>
 							총 주차면 : {parkInfo.info.TPKCT.toLocaleString()}대
