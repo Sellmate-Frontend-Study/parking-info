@@ -5,13 +5,11 @@ import { getParkingInfo } from '@/actions/parkingInfo';
 import { getPrivateParkInfo } from '@/actions/privateParkInfo';
 import { ParkInfo } from '@/types/parkInfo';
 import { ParkingInfo } from '@/types/parkingInfo';
-import { PrivateParkInfo } from '@/types/privateParkInfo';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 interface ParkInfoContextInterface {
 	parkInfos?: ParkInfo[];
 	parkingInfos?: ParkingInfo[];
-	privateParkInfos?: PrivateParkInfo[];
 }
 
 const parkInfoContext = createContext<ParkInfoContextInterface>({});
@@ -21,8 +19,10 @@ export const ParkInfoProvider = ({ children }: { children: React.ReactNode }) =>
 
 	useEffect(() => {
 		Promise.all([getParkInfo(), getParkingInfo(), getPrivateParkInfo()]).then(
-			([parkInfos, parkingInfos, privateParkInfos]) =>
-				setParkInfo({ parkInfos, parkingInfos, privateParkInfos })
+			([publicParkInfos, parkingInfos, privateParkInfos]) => {
+				const combined = [...publicParkInfos, ...privateParkInfos];
+				setParkInfo({ parkInfos: combined, parkingInfos });
+			}
 		);
 	}, []);
 
@@ -30,7 +30,5 @@ export const ParkInfoProvider = ({ children }: { children: React.ReactNode }) =>
 };
 
 export const useParkInfo = () => {
-	const context = useContext(parkInfoContext);
-
-	return context;
+	return useContext(parkInfoContext);
 };
