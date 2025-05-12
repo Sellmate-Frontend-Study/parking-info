@@ -23,20 +23,20 @@ const getTrafficState = (available: number, total: number): MarkerType => {
 const KakaoMap = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
 	const { initMap, setMarkersFromData } = useKakaoMap();
-	const { parkInfos, parkingInfos } = useParkInfo();
+	const { parkInfos, parkingInfos, privateParkInfos } = useParkInfo();
 	const centerLocation = useAtomValue(locationAtom);
 	const radius = useAtomValue(radiusAtom);
 	const setSearchList = useSetAtom(SearchAtom);
 
 	useEffect(() => {
-		if (!parkInfos) return;
+		if (!(parkInfos && privateParkInfos)) return;
 
-		const targetParkInfos = parkInfos.filter((parkInfo) => {
+		const targetParkInfos = [...parkInfos, ...privateParkInfos].filter((parkInfo) => {
 			const distance = calculateHaversineDistance({
 				lat1: centerLocation.lat,
 				lng1: centerLocation.lng,
-				lat2: parkInfo.LAT,
-				lng2: parkInfo.LOT,
+				lat2: +parkInfo.LAT,
+				lng2: +parkInfo.LOT,
 			});
 			return distance <= radius;
 		});
@@ -45,16 +45,16 @@ const KakaoMap = () => {
 			const rawData: MarkerDetail = {
 				name: parkInfo.PKLT_NM,
 				address: parkInfo.ADDR,
-				parkCategory: parkInfo.PKLT_KND_NM,
-				telNumber: parkInfo.TELNO,
-				totalParkingArea: parkInfo.TPKCT,
-				weekDayOpenTime: parkInfo.WD_OPER_BGNG_TM,
-				weekDayCloseTime: parkInfo.WD_OPER_END_TM,
-				weekEndOpenTime: parkInfo.WE_OPER_BGNG_TM,
-				weekEndCloseTime: parkInfo.WE_OPER_END_TM,
-				syncTime: parkInfo.LAST_DATA_SYNC_TM,
-				price: parkInfo.PRK_CRG,
-				parkingHour: parkInfo.PRK_HM,
+				parkCategory: parkInfo?.PKLT_KND_NM || '',
+				telNumber: parkInfo?.TELNO || '',
+				totalParkingArea: parkInfo?.TPKCT || '',
+				weekDayOpenTime: parkInfo?.WD_OPER_BGNG_TM || '',
+				weekDayCloseTime: parkInfo?.WD_OPER_END_TM || '',
+				weekEndOpenTime: parkInfo?.WE_OPER_BGNG_TM || '',
+				weekEndCloseTime: parkInfo?.WE_OPER_END_TM || '',
+				syncTime: parkInfo?.LAST_DATA_SYNC_TM || '',
+				price: parkInfo?.PRK_CRG || '',
+				parkingHour: parkInfo?.PRK_HM || '',
 			};
 
 			const realTimeInfo = parkingInfos?.find(
