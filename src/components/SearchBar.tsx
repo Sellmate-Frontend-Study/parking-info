@@ -2,7 +2,7 @@
 
 import { getLocalAddress } from '@/actions/localAddress';
 import useInput from '@/hooks/useInput';
-import useParkInfo from '@/hooks/useParkInfo';
+import useParkInfo from '@/hooks/useParkingInfo';
 import { locationAtom } from '@/states/locationAtom';
 import { radiusAtom } from '@/states/radiusAtom';
 import { ParkInfo } from '@/types/parkInfo';

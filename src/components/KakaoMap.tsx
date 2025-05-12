@@ -7,9 +7,9 @@ import { useAtomValue } from 'jotai';
 import { radiusAtom } from '@/states/radiusAtom';
 import { locationAtom } from '@/states/locationAtom';
 import { MarkerType } from '@/types/map';
-import ParkInfoDetail from './ParkInfoDetail';
 import { renderToHtmlElement } from '@/utils/renderComponent';
-import useParkInfo from '@/hooks/useParkInfo';
+import useParkingInfo from '@/hooks/useParkingInfo';
+import ParkingInfoDetail from './ParkingInfoDetail';
 
 const getTrafficState = (available: number, total: number): MarkerType => {
 	if (total === 1) return MarkerType.Normal;
@@ -25,30 +25,26 @@ const KakaoMap = () => {
 	const radius = useAtomValue(radiusAtom);
 	const location = useAtomValue(locationAtom);
 	const { initMap, clearMarkers, setMarker, showCustomOverlay, hideCustomOverlay } = useKakaoMap();
-	const { parkingInfos, getTargetParkInfos } = useParkInfo();
+	const { getTargetParkingInfos } = useParkingInfo();
 
 	useEffect(() => {
 		clearMarkers();
 
-		const targetParkInfos = getTargetParkInfos(location, radius);
+		const targetParkingInfos = getTargetParkingInfos(location, radius);
 
-		targetParkInfos.forEach((parkInfo) => {
-			const realTimeInfo = parkingInfos?.find(
-				(info) => info.PKLT_NM === parkInfo.PKLT_NM && info.ADDR === parkInfo.ADDR
-			);
-
-			const state: MarkerType = realTimeInfo
-				? getTrafficState(realTimeInfo.NOW_PRK_VHCL_CNT, realTimeInfo.TPKCT)
+		targetParkingInfos.forEach((parkingInfo) => {
+			const state: MarkerType = parkingInfo.availableParkingSpots
+				? getTrafficState(parkingInfo.availableParkingSpots, parkingInfo.totalParkingCount)
 				: MarkerType.Normal;
 
 			setMarker({
-				latitude: parkInfo.LAT,
-				longitude: parkInfo.LOT,
+				latitude: parkingInfo.latitude,
+				longitude: parkingInfo.longitude,
 				state: state,
 				clickEvent: (marker: kakao.maps.Marker) => {
 					const content = renderToHtmlElement(
-						<ParkInfoDetail
-							parkInfo={{ info: parkInfo, realTimeInfo: realTimeInfo }}
+						<ParkingInfoDetail
+							parkingInfo={parkingInfo}
 							onClose={hideCustomOverlay}
 						/>
 					);
@@ -57,7 +53,7 @@ const KakaoMap = () => {
 				},
 			});
 		});
-	}, [location, radius, getTargetParkInfos]);
+	}, [location, radius, getTargetParkingInfos]);
 
 	return (
 		<>

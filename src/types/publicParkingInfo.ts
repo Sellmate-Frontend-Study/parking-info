@@ -1,4 +1,4 @@
-export interface ParkInfo {
+export interface PublicParkingInfo {
 	PKLT_NM: string;
 	ADDR: string;
 	PKLT_CD: string;
@@ -40,13 +40,13 @@ export interface ParkInfo {
 	LOT: number;
 }
 
-export interface ParkInfoResponse {
+export interface PublicParkingInfoResponse {
 	GetParkInfo: {
 		list_total_count: number;
 		RESULT: {
 			CODE: string;
 			MESSAGE: string;
 		};
-		row: ParkInfo[];
+		row: PublicParkingInfo[];
 	};
 }
