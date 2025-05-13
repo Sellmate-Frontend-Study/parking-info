@@ -12,7 +12,7 @@ import { ParkInfo } from '@/types/parkInfo';
 import { ParkingInfo } from '@/types/parkingInfo';
 import { getTrafficState } from '@/utils/getTrafficState';
 import ParkingList from '../ParkingList';
-
+import { getPrivateParkInfo } from '@/actions/privateParkInfo';
 export interface SelectedPark {
 	parkInfo: ParkInfo;
 	realTimeInfo?: ParkingInfo;
@@ -25,10 +25,11 @@ const KakaoMap = () => {
 	const { RADIUS, centerLocation, initMap, setMarker, resetMarkers, openInfoWindow } = useKakaoMap({
 		onMarkerClick: (key) => setSelectedKey(key),
 	});
-	const { parkInfos, parkingInfos, privateParkInfos } = useParkInfo();
+	const { parkInfos, parkingInfos } = useParkInfo();
 
 	useEffect(() => {
 		if (!parkInfos) return;
+
 		resetMarkers();
 
 		const targetParkInfos = parkInfos.filter((parkInfo) => {
@@ -40,12 +41,15 @@ const KakaoMap = () => {
 			});
 			return distance <= RADIUS;
 		});
+		console.log('targetParkInfos', targetParkInfos);
 		setParkInfosInCircle(targetParkInfos);
 
 		targetParkInfos.forEach((parkInfo) => {
 			const realTimeInfo = parkingInfos?.find(
 				(info) => info.PKLT_NM === parkInfo.PKLT_NM && info.ADDR === parkInfo.ADDR
 			);
+
+			console.log('realTimeInfo', realTimeInfo);
 
 			const state = realTimeInfo
 				? getTrafficState(realTimeInfo.NOW_PRK_VHCL_CNT, realTimeInfo.TPKCT)
