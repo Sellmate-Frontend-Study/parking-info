@@ -24,7 +24,7 @@ const KakaoMap = () => {
 	const mapElementRef = useRef<HTMLDivElement>(null);
 	const radius = useAtomValue(radiusAtom);
 	const location = useAtomValue(locationAtom);
-	const { initMap, clearMarkers, setMarker, showCustomOverlay, hideCustomOverlay } = useKakaoMap();
+	const { initMap, clearMarkers, setMarker, showCustomOverlay } = useKakaoMap();
 	const { getTargetParkingInfos } = useParkingInfo();
 
 	useEffect(() => {
@@ -42,12 +42,7 @@ const KakaoMap = () => {
 				longitude: parkingInfo.longitude,
 				state: state,
 				clickEvent: () => {
-					const content = renderToHtmlElement(
-						<ParkingInfoDetail
-							parkingInfo={parkingInfo}
-							onClose={hideCustomOverlay}
-						/>
-					);
+					const content = renderToHtmlElement(<ParkingInfoDetail parkingInfo={parkingInfo} />);
 
 					showCustomOverlay(content, {
 						latitude: parkingInfo.latitude,

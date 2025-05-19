@@ -1,18 +1,20 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAtom } from 'jotai';
 import { radiusAtom } from '@/states/radiusAtom';
 import { locationAtom } from '@/states/locationAtom';
 import { Location, SetMarker } from '@/types/map';
+import { kakaoMapAtom } from '@/states/kakaoMapAtom';
+import { mapOverlayAtom } from '@/states/mapOverlayAtom';
 
 const useKakaoMap = () => {
 	const [radius] = useAtom(radiusAtom);
 	const [location, setLocation] = useAtom(locationAtom);
-	const kakaoMap = useRef<kakao.maps.Map | null>(null);
+	const [kakaoMap, setKakaoMap] = useAtom(kakaoMapAtom);
 	const mapCircle = useRef<kakao.maps.Circle | null>(null);
 	const markerCluster = useRef<kakao.maps.MarkerClusterer | null>(null);
-	const customOverlay = useRef<kakao.maps.CustomOverlay | null>(null);
+	const [mapOverlay, setMapOverlay] = useAtom(mapOverlayAtom);
 
 	const newLocation = ({ latitude, longitude }: Location) => {
 		return new kakao.maps.LatLng(latitude, longitude);
@@ -29,10 +31,11 @@ const useKakaoMap = () => {
 				level: 3,
 			};
 
-			kakaoMap.current = new kakao.maps.Map(mapElement, options);
+			const _kakaoMap = new kakao.maps.Map(mapElement, options);
+			setKakaoMap(_kakaoMap);
 
 			markerCluster.current = new kakao.maps.MarkerClusterer({
-				map: kakaoMap.current,
+				map: _kakaoMap,
 				averageCenter: true,
 				minLevel: 5,
 			});
@@ -44,10 +47,10 @@ const useKakaoMap = () => {
 				fillColor: '#CFE7FF',
 				fillOpacity: 0.3,
 			});
-			mapCircle.current.setMap(kakaoMap.current);
+			mapCircle.current.setMap(_kakaoMap);
 
-			kakao.maps.event.addListener(kakaoMap.current, 'dragend', () => {
-				const newCenter = kakaoMap.current!.getCenter();
+			kakao.maps.event.addListener(_kakaoMap, 'dragend', () => {
+				const newCenter = _kakaoMap.getCenter();
 				setLocation({ latitude: newCenter.getLat(), longitude: newCenter.getLng() });
 			});
 		});
@@ -57,7 +60,7 @@ const useKakaoMap = () => {
 
 	const setMarker = useCallback(
 		({ latitude, longitude, state, clickEvent }: SetMarker) => {
-			if (!kakaoMap.current || !markerCluster.current) return;
+			if (!kakaoMap || !markerCluster.current) return;
 
 			const imageSrc = `/marker_${state}.svg`;
 			const imageSize = new kakao.maps.Size(30, 32.44);
@@ -77,51 +80,55 @@ const useKakaoMap = () => {
 
 			markerCluster.current.addMarker(marker);
 		},
-		[kakaoMap.current]
+		[kakaoMap]
 	);
 
 	const showCustomOverlay = useCallback(
 		(content: HTMLElement, location: Location) => {
-			hideCustomOverlay();
+			if (kakaoMap) {
+				hideCustomOverlay();
 
-			customOverlay.current = new kakao.maps.CustomOverlay({
-				clickable: true,
-				map: kakaoMap.current!,
-				content: content,
-				position: newLocation({
-					latitude: location.latitude,
-					longitude: location.longitude - 0.0025,
-				}),
-				zIndex: 100,
-			});
+				const _mapOverlay = new kakao.maps.CustomOverlay({
+					clickable: true,
+					map: kakaoMap,
+					content: content,
+					position: newLocation({
+						latitude: location.latitude,
+						longitude: location.longitude - 0.0025,
+					}),
+					zIndex: 100,
+				});
 
-			kakaoMap.current?.setCenter(
-				newLocation({
-					latitude: location.latitude - 0.002,
-					longitude: location.longitude,
-				})
-			);
+				setMapOverlay(_mapOverlay);
+
+				kakaoMap.setCenter(
+					newLocation({
+						latitude: location.latitude - 0.002,
+						longitude: location.longitude,
+					})
+				);
+			}
 		},
-		[kakaoMap.current]
+		[kakaoMap]
 	);
 
 	const hideCustomOverlay = useCallback(() => {
-		if (customOverlay.current) {
-			customOverlay.current.setMap(null);
+		if (mapOverlay) {
+			mapOverlay?.setMap(null);
 		}
-	}, [kakaoMap.current]);
+	}, [mapOverlay]);
 
 	useEffect(() => {
-		if (kakaoMap.current && mapCircle.current) {
+		if (kakaoMap && mapCircle.current) {
 			const newCenter = newLocation({
 				latitude: location.latitude,
 				longitude: location.longitude,
 			});
 			mapCircle.current.setPosition(newCenter);
-			kakaoMap.current.setCenter(newCenter);
+			kakaoMap.setCenter(newCenter);
 		}
 
-		hideCustomOverlay();
+		// hideCustomOverlay();
 	}, [location]);
 
 	useEffect(() => {
@@ -129,7 +136,7 @@ const useKakaoMap = () => {
 			mapCircle.current.setRadius(radius);
 		}
 
-		hideCustomOverlay();
+		// hideCustomOverlay();
 	}, [radius]);
 
 	return {

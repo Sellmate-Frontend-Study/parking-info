@@ -3,7 +3,6 @@
 import { getLocalAddress } from '@/actions/localAddress';
 import useInput from '@/hooks/useInput';
 import useParkInfo from '@/hooks/useParkingInfo';
-import { locationAtom } from '@/states/locationAtom';
 import { radiusAtom } from '@/states/radiusAtom';
 import SearchIcon from '@assets/search.svg';
 import clsx from 'clsx';
@@ -11,13 +10,18 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { useState } from 'react';
 import Location from '@assets/location.svg';
 import { ParkingInfo } from '@/types/parkingInfo';
+import useKakaoMap from '@/hooks/useKakaoMap';
+import ParkingInfoDetail from './ParkingInfoDetail';
+import { renderToHtmlElement } from '@/utils/renderComponent';
+import { locationAtom } from '@/states/locationAtom';
 
 const SearchBar = () => {
 	const radius = useAtomValue(radiusAtom);
-	const setLocatin = useSetAtom(locationAtom);
 	const { getTargetParkingInfos } = useParkInfo();
 	const { value, handleChange } = useInput();
 	const [result, setResult] = useState<Array<ParkingInfo>>([]);
+	const { showCustomOverlay } = useKakaoMap();
+	const setLocatin = useSetAtom(locationAtom);
 
 	const search = () => {
 		getLocalAddress(value).then((data) => {
@@ -69,10 +73,18 @@ const SearchBar = () => {
 						key={k}
 						className='content-center hover:bg-gray-100'
 						onClick={() => {
+							const content = renderToHtmlElement(<ParkingInfoDetail parkingInfo={v} />);
+
 							setLocatin({
 								latitude: v.latitude,
 								longitude: v.longitude,
 							});
+
+							showCustomOverlay(content, {
+								latitude: v.latitude,
+								longitude: v.longitude,
+							});
+
 							setResult([]);
 						}}
 					>

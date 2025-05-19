@@ -4,19 +4,22 @@ import Close from '@assets/close.svg';
 import Telephone from '@assets/telephone.svg';
 import Location from '@assets/location.svg';
 import { ParkingInfo } from '@/types/parkingInfo';
+import { useAtomValue } from 'jotai';
+import { mapOverlayAtom } from '@/states/mapOverlayAtom';
 
 interface ParkingInfoDetailProps {
 	parkingInfo: ParkingInfo;
-	onClose?: () => void;
 }
 
-const ParkingInfoDetail = ({ parkingInfo, onClose = () => {} }: ParkingInfoDetailProps) => {
+const ParkingInfoDetail = ({ parkingInfo }: ParkingInfoDetailProps) => {
+	const mapOverlay = useAtomValue(mapOverlayAtom);
+
 	return (
 		<div className='top-10 left-0 h-full w-md rounded-lg border-1 border-solid border-gray-100 bg-white p-5 shadow-xl'>
 			<div className='flex flex-col'>
 				<div className='mb-8 flex flex-row justify-between'>
 					<span className='text-xl font-bold text-black'>{parkingInfo.name}</span>
-					<div onClick={onClose}>
+					<div onClick={() => mapOverlay?.setMap(null)}>
 						<Close className='absolute top-5 right-5 h-6 w-6 text-black' />
 					</div>
 				</div>
