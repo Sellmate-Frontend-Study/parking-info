@@ -41,7 +41,7 @@ const KakaoMap = () => {
 				latitude: parkingInfo.latitude,
 				longitude: parkingInfo.longitude,
 				state: state,
-				clickEvent: (marker: kakao.maps.Marker) => {
+				clickEvent: () => {
 					const content = renderToHtmlElement(
 						<ParkingInfoDetail
 							parkingInfo={parkingInfo}
@@ -49,7 +49,10 @@ const KakaoMap = () => {
 						/>
 					);
 
-					showCustomOverlay(content, marker);
+					showCustomOverlay(content, {
+						latitude: parkingInfo.latitude,
+						longitude: parkingInfo.longitude,
+					});
 				},
 			});
 		});

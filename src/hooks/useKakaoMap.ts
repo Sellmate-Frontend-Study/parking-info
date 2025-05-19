@@ -13,7 +13,6 @@ const useKakaoMap = () => {
 	const mapCircle = useRef<kakao.maps.Circle | null>(null);
 	const markerCluster = useRef<kakao.maps.MarkerClusterer | null>(null);
 	const customOverlay = useRef<kakao.maps.CustomOverlay | null>(null);
-	const markers = useRef<Map<string, kakao.maps.Marker>>(new Map());
 
 	const newLocation = ({ latitude, longitude }: Location) => {
 		return new kakao.maps.LatLng(latitude, longitude);
@@ -54,12 +53,7 @@ const useKakaoMap = () => {
 		});
 	};
 
-	const clearMarkers = useCallback(() => {
-		if (markerCluster.current && markers.current) {
-			markerCluster.current.clear();
-			markers.current.clear();
-		}
-	}, [markerCluster.current, markers.current]);
+	const clearMarkers = () => markerCluster.current?.clear();
 
 	const setMarker = useCallback(
 		({ latitude, longitude, state, clickEvent }: SetMarker) => {
@@ -86,24 +80,25 @@ const useKakaoMap = () => {
 		[kakaoMap.current]
 	);
 
-	const getMarkerByKey = useCallback((key: string) => markers.current.get(key), [markers.current]);
-
 	const showCustomOverlay = useCallback(
-		(content: HTMLElement, marker: kakao.maps.Marker) => {
+		(content: HTMLElement, location: Location) => {
 			hideCustomOverlay();
 
 			customOverlay.current = new kakao.maps.CustomOverlay({
 				clickable: true,
 				map: kakaoMap.current!,
 				content: content,
-				position: marker.getPosition(),
+				position: newLocation({
+					latitude: location.latitude,
+					longitude: location.longitude - 0.0025,
+				}),
 				zIndex: 100,
 			});
 
 			kakaoMap.current?.setCenter(
 				newLocation({
-					latitude: marker.getPosition().getLat() - 0.002,
-					longitude: marker.getPosition().getLng(),
+					latitude: location.latitude - 0.002,
+					longitude: location.longitude,
 				})
 			);
 		},
@@ -142,7 +137,6 @@ const useKakaoMap = () => {
 		initMap,
 		clearMarkers,
 		setMarker,
-		getMarkerByKey,
 		showCustomOverlay,
 		hideCustomOverlay,
 	};
