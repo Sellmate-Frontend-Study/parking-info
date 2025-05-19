@@ -14,6 +14,7 @@ const parsePrivateParkingInfo = (
 		);
 
 		return {
+			type: '일반',
 			name: v.prk_plce_nm,
 			addr: v.prk_plce_adres,
 			telNo: '',

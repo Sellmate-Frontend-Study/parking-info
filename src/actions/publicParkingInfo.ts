@@ -14,6 +14,7 @@ const parsePublicParkingInfo = (
 		);
 
 		return {
+			type: v.PKLT_KND_NM,
 			name: v.PKLT_NM,
 			addr: v.ADDR,
 			telNo: v.TELNO,

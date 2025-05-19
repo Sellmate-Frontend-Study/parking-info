@@ -1,4 +1,5 @@
 export interface ParkingInfo {
+	type: string;
 	name: string;
 	addr: string;
 	telNo: string;

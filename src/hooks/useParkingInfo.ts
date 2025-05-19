@@ -9,16 +9,19 @@ const useParkingInfo = () => {
 	const parkingInfo = useAtomValue(parkingInfoAtom);
 
 	const getTargetParkingInfos = useCallback(
-		(location: Location, radius: Radius) =>
-			parkingInfo.filter((v) => {
-				const distance = calculateHaversineDistance({
-					lat1: location.latitude,
-					lng1: location.longitude,
-					lat2: v.latitude,
-					lng2: v.longitude,
-				});
-				return distance <= radius;
-			}) ?? [],
+		(location: Location, radius: Radius) => {
+			return (
+				parkingInfo.filter((v) => {
+					const distance = calculateHaversineDistance({
+						lat1: location.latitude,
+						lng1: location.longitude,
+						lat2: v.latitude,
+						lng2: v.longitude,
+					});
+					return distance <= radius;
+				}) ?? []
+			);
+		},
 		[parkingInfo]
 	);
 

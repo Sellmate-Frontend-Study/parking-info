@@ -5,19 +5,19 @@ import useInput from '@/hooks/useInput';
 import useParkInfo from '@/hooks/useParkingInfo';
 import { locationAtom } from '@/states/locationAtom';
 import { radiusAtom } from '@/states/radiusAtom';
-import { ParkInfo } from '@/types/parkInfo';
 import SearchIcon from '@assets/search.svg';
 import clsx from 'clsx';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useState } from 'react';
 import Location from '@assets/location.svg';
+import { ParkingInfo } from '@/types/parkingInfo';
 
 const SearchBar = () => {
 	const radius = useAtomValue(radiusAtom);
 	const setLocatin = useSetAtom(locationAtom);
-	const { getTargetParkInfos } = useParkInfo();
+	const { getTargetParkingInfos } = useParkInfo();
 	const { value, handleChange } = useInput();
-	const [result, setResult] = useState<Array<ParkInfo>>([]);
+	const [result, setResult] = useState<Array<ParkingInfo>>([]);
 
 	const search = () => {
 		getLocalAddress(value).then((data) => {
@@ -26,7 +26,7 @@ const SearchBar = () => {
 				return;
 			}
 
-			const targetParkInfos = getTargetParkInfos(
+			const targetParkInfos = getTargetParkingInfos(
 				{ latitude: parseFloat(data[0].y), longitude: parseFloat(data[0].x) },
 				radius
 			);
@@ -70,8 +70,8 @@ const SearchBar = () => {
 						className='content-center hover:bg-gray-100'
 						onClick={() => {
 							setLocatin({
-								latitude: v.LAT,
-								longitude: v.LOT,
+								latitude: v.latitude,
+								longitude: v.longitude,
 							});
 							setResult([]);
 						}}
@@ -80,12 +80,12 @@ const SearchBar = () => {
 							<Location className='h-[20px] w-[20px] text-gray-400' />
 							<div className='flex w-full flex-row justify-between'>
 								<div className='flex flex-col items-start text-start text-sm'>
-									<span>{v.PKLT_NM}</span>
-									<span>{v.ADDR}</span>
+									<span>{v.name}</span>
+									<span>{v.addr}</span>
 								</div>
 							</div>
 							<div className='w-22 self-center text-sm'>
-								<span>{v.PKLT_KND_NM}</span>
+								<span>{v.type}</span>
 							</div>
 						</div>
 					</li>
