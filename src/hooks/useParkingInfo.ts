@@ -10,6 +10,8 @@ const useParkingInfo = () => {
 
 	const getTargetParkingInfos = useCallback(
 		(location: Location, radius: Radius) => {
+			console.log(parkingInfo);
+
 			return (
 				parkingInfo.filter((v) => {
 					const distance = calculateHaversineDistance({
@@ -18,6 +20,9 @@ const useParkingInfo = () => {
 						lat2: v.latitude,
 						lng2: v.longitude,
 					});
+					if (distance <= radius) {
+						console.log(distance, ' + ', radius);
+					}
 					return distance <= radius;
 				}) ?? []
 			);

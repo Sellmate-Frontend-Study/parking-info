@@ -6,7 +6,7 @@ import { radiusAtom } from '@/states/radiusAtom';
 import { locationAtom } from '@/states/locationAtom';
 import { Location, SetMarker } from '@/types/map';
 import { kakaoMapAtom } from '@/states/kakaoMapAtom';
-import { mapOverlayAtom } from '@/states/mapOverlayAtom';
+import { infoWindowAtom } from '@/states/infoWindowAtom';
 
 const useKakaoMap = () => {
 	const [radius] = useAtom(radiusAtom);
@@ -14,7 +14,8 @@ const useKakaoMap = () => {
 	const [kakaoMap, setKakaoMap] = useAtom(kakaoMapAtom);
 	const mapCircle = useRef<kakao.maps.Circle | null>(null);
 	const markerCluster = useRef<kakao.maps.MarkerClusterer | null>(null);
-	const [mapOverlay, setMapOverlay] = useAtom(mapOverlayAtom);
+
+	const [infoWindow, setInfoWindow] = useAtom(infoWindowAtom);
 
 	const newLocation = ({ latitude, longitude }: Location) => {
 		return new kakao.maps.LatLng(latitude, longitude);
@@ -39,6 +40,8 @@ const useKakaoMap = () => {
 				averageCenter: true,
 				minLevel: 5,
 			});
+
+			setInfoWindow(new kakao.maps.InfoWindow({ removable: true }));
 
 			mapCircle.current = new kakao.maps.Circle({
 				center,
@@ -83,40 +86,47 @@ const useKakaoMap = () => {
 		[kakaoMap]
 	);
 
-	const showCustomOverlay = useCallback(
-		(content: HTMLElement, location: Location) => {
-			if (kakaoMap) {
-				hideCustomOverlay();
+	// const showCustomOverlay = useCallback(
+	// 	(content: HTMLElement, location: Location) => {
+	// 		if (kakaoMap) {
+	// 			const iwContent = parkInfoDetail({
+	// 				latitude,
+	// 				longitude,
+	// 			});
+	// 			infoWindow!.setContent(iwContent);
+	// 			infoWindow!.open(kakaoMap, marker);
 
-				const _mapOverlay = new kakao.maps.CustomOverlay({
-					clickable: true,
-					map: kakaoMap,
-					content: content,
-					position: newLocation({
-						latitude: location.latitude,
-						longitude: location.longitude - 0.0025,
-					}),
-					zIndex: 100,
-				});
+	// 			hideCustomOverlay();
 
-				setMapOverlay(_mapOverlay);
+	// 			const _mapOverlay = new kakao.maps.CustomOverlay({
+	// 				clickable: true,
+	// 				map: kakaoMap,
+	// 				content: content,
+	// 				position: newLocation({
+	// 					latitude: location.latitude,
+	// 					longitude: location.longitude - 0.0025,
+	// 				}),
+	// 				zIndex: 100,
+	// 			});
 
-				kakaoMap.setCenter(
-					newLocation({
-						latitude: location.latitude - 0.002,
-						longitude: location.longitude,
-					})
-				);
-			}
-		},
-		[kakaoMap]
-	);
+	// 			setMapOverlay(_mapOverlay);
+
+	// 			kakaoMap.setCenter(
+	// 				newLocation({
+	// 					latitude: location.latitude - 0.002,
+	// 					longitude: location.longitude,
+	// 				})
+	// 			);
+	// 		}
+	// 	},
+	// 	[kakaoMap]
+	// );
 
 	const hideCustomOverlay = useCallback(() => {
-		if (mapOverlay) {
-			mapOverlay?.setMap(null);
+		if (infoWindow) {
+			infoWindow?.close();
 		}
-	}, [mapOverlay]);
+	}, [infoWindow]);
 
 	useEffect(() => {
 		if (kakaoMap && mapCircle.current) {
@@ -144,7 +154,6 @@ const useKakaoMap = () => {
 		initMap,
 		clearMarkers,
 		setMarker,
-		showCustomOverlay,
 		hideCustomOverlay,
 	};
 };
