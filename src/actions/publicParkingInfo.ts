@@ -14,6 +14,7 @@ const parsePublicParkingInfo = (
 		);
 
 		return {
+			isFree: v.CHGD_FREE_NM,
 			type: v.PKLT_KND_NM,
 			name: v.PKLT_NM,
 			addr: v.ADDR,
@@ -30,6 +31,9 @@ const parsePublicParkingInfo = (
 			weekendOperatingHours: `${v.WE_OPER_BGNG_TM.slice(0, 2)}:${v.WE_OPER_BGNG_TM.slice(2)} ~ ${v.WE_OPER_END_TM.slice(0, 2)}:${v.WE_OPER_END_TM.slice(2)}`,
 			holidayOperatingHours: `${v.LHLDY_BGNG.slice(0, 2)}:${v.LHLDY_BGNG.slice(2)} ~ ${v.LHLDY.slice(0, 2)}:${v.LHLDY.slice(2)}`,
 			availableParkingSpots: realTimeInfo?.NOW_PRK_VHCL_CNT,
+			dailyMaximumRate: v.DLY_MAX_CRG,
+			monthlyPassRate: v.MNTL_CMUT_CRG,
+			updatedAt: v.LAST_DATA_SYNC_TM,
 		};
 	});
 };

@@ -11,17 +11,20 @@ import { useState } from 'react';
 import Location from '@assets/location.svg';
 import { ParkingInfo } from '@/types/parkingInfo';
 import useKakaoMap from '@/hooks/useKakaoMap';
-import ParkingInfoDetail from './ParkingInfoDetail';
 import { renderToHtmlElement } from '@/utils/renderComponent';
 import { locationAtom } from '@/states/locationAtom';
+import { infoWindowAtom } from '@/states/infoWindowAtom';
+import { parkInfoDetail } from '@/components/ParkingInfoDetail';
+import { kakaoMapAtom } from '@/states/kakaoMapAtom';
 
 const SearchBar = () => {
 	const radius = useAtomValue(radiusAtom);
 	const { getTargetParkingInfos } = useParkInfo();
 	const { value, handleChange } = useInput();
 	const [result, setResult] = useState<Array<ParkingInfo>>([]);
-	const { showCustomOverlay } = useKakaoMap();
-	const setLocatin = useSetAtom(locationAtom);
+	const setLocation = useSetAtom(locationAtom);
+	const infoWindow = useAtomValue(infoWindowAtom);
+	const kakaoMap = useAtomValue(kakaoMapAtom);
 
 	const search = () => {
 		getLocalAddress(value).then((data) => {
@@ -29,6 +32,8 @@ const SearchBar = () => {
 				alert('검색 결과가 없습니다.');
 				return;
 			}
+
+			console.log({ latitude: parseFloat(data[0].y), longitude: parseFloat(data[0].x) });
 
 			const targetParkInfos = getTargetParkingInfos(
 				{ latitude: parseFloat(data[0].y), longitude: parseFloat(data[0].x) },
@@ -54,6 +59,8 @@ const SearchBar = () => {
 					}}
 				/>
 				<button
+					title='search'
+					type='button'
 					className='group px-4'
 					onClick={search}
 				>
@@ -71,19 +78,25 @@ const SearchBar = () => {
 				{result.map((v, k) => (
 					<li
 						key={k}
-						className='content-center hover:bg-gray-100'
+						className='cursor-pointer content-center hover:bg-gray-100'
 						onClick={() => {
-							const content = renderToHtmlElement(<ParkingInfoDetail parkingInfo={v} />);
-
-							setLocatin({
+							setLocation({
 								latitude: v.latitude,
 								longitude: v.longitude,
 							});
 
-							showCustomOverlay(content, {
-								latitude: v.latitude,
-								longitude: v.longitude,
-							});
+							if (kakaoMap && infoWindow) {
+								// infoWindow?.close();
+								// const markerPosition = newLocation({ latitude, longitude });
+								// const marker = new kakao.maps.Marker({
+								// 	position: markerPosition,
+								// 	image: markerImage,
+								// 	clickable: true,
+								// });
+								// const iwContent = parkInfoDetail(v);
+								// infoWindow!.setContent(iwContent);
+								// infoWindow!.open(kakaoMap, k);
+							}
 
 							setResult([]);
 						}}

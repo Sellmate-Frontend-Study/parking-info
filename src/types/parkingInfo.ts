@@ -15,4 +15,8 @@ export interface ParkingInfo {
 	weekendOperatingHours: string;
 	holidayOperatingHours: string;
 	availableParkingSpots?: number;
+	updatedAt: string;
+	dailyMaximumRate: number;
+	monthlyPassRate: string;
+	isFree: string;
 }

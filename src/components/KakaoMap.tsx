@@ -7,9 +7,10 @@ import { useAtomValue } from 'jotai';
 import { radiusAtom } from '@/states/radiusAtom';
 import { locationAtom } from '@/states/locationAtom';
 import { MarkerType } from '@/types/map';
-import { renderToHtmlElement } from '@/utils/renderComponent';
 import useParkingInfo from '@/hooks/useParkingInfo';
-import ParkingInfoDetail from './ParkingInfoDetail';
+import { parkInfoDetail } from './ParkingInfoDetail';
+import { infoWindowAtom } from '@/states/infoWindowAtom';
+import { kakaoMapAtom } from '@/states/kakaoMapAtom';
 
 const getTrafficState = (available: number, total: number): MarkerType => {
 	if (total === 1) return MarkerType.Normal;
@@ -24,9 +25,10 @@ const KakaoMap = () => {
 	const mapElementRef = useRef<HTMLDivElement>(null);
 	const radius = useAtomValue(radiusAtom);
 	const location = useAtomValue(locationAtom);
-	const { initMap, clearMarkers, setMarker, showCustomOverlay } = useKakaoMap();
+	const { initMap, clearMarkers, setMarker } = useKakaoMap();
 	const { getTargetParkingInfos } = useParkingInfo();
-
+	const infoWindow = useAtomValue(infoWindowAtom);
+	const kakaoMap = useAtomValue(kakaoMapAtom);
 	useEffect(() => {
 		clearMarkers();
 
@@ -41,13 +43,14 @@ const KakaoMap = () => {
 				latitude: parkingInfo.latitude,
 				longitude: parkingInfo.longitude,
 				state: state,
-				clickEvent: () => {
-					const content = renderToHtmlElement(<ParkingInfoDetail parkingInfo={parkingInfo} />);
+				clickEvent: (marker) => {
+					if (kakaoMap && infoWindow) {
+						infoWindow?.close();
 
-					showCustomOverlay(content, {
-						latitude: parkingInfo.latitude,
-						longitude: parkingInfo.longitude,
-					});
+						const iwContent = parkInfoDetail(parkingInfo);
+						infoWindow!.setContent(iwContent);
+						infoWindow!.open(kakaoMap, marker);
+					}
 				},
 			});
 		});

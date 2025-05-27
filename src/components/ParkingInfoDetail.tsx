@@ -1,108 +1,115 @@
 'use client';
 
-import Close from '@assets/close.svg';
-import Telephone from '@assets/telephone.svg';
-import Location from '@assets/location.svg';
+import { FaPhone, FaLocationDot } from 'react-icons/fa6';
+import { IoTime } from 'react-icons/io5';
+import { useAtom } from 'jotai';
+import { MdAddLocationAlt } from 'react-icons/md';
+import { TbCurrencyWon } from 'react-icons/tb';
+import { insertColon } from '@/utils/insertColon';
 import { ParkingInfo } from '@/types/parkingInfo';
-import { useAtomValue } from 'jotai';
-import { mapOverlayAtom } from '@/states/mapOverlayAtom';
 
-interface ParkingInfoDetailProps {
-	parkingInfo: ParkingInfo;
-}
+export const parkInfoDetail = (parkInfo: ParkingInfo) => {
+	console.log(parkInfo);
+	const chargeInfo = () =>
+		parkInfo.isFree === '무료'
+			? '<li>무료</li>'
+			: `<li>기본 요금/시간 : ${Number(parkInfo.baseParkingFee).toLocaleString()}원 / ${parkInfo.baseParkingTime}분</li>
+				<li>추가 요금/시간 : ${parkInfo.additionalParkingFee}원 / ${parkInfo.additionalParkingTime}분</li>
+				${parkInfo.dailyMaximumRate ? `<li>일 최대 요금 : ${Number(parkInfo.dailyMaximumRate).toLocaleString()}원</li>` : ''}
+				${parkInfo.monthlyPassRate ? `<li>정기권 요금 : ${Number(parkInfo.monthlyPassRate).toLocaleString()}원</li>` : ''}
+		`;
 
-const ParkingInfoDetail = ({ parkingInfo }: ParkingInfoDetailProps) => {
-	const mapOverlay = useAtomValue(mapOverlayAtom);
-
-	return (
-		<div className='top-10 left-0 h-full w-md rounded-lg border-1 border-solid border-gray-100 bg-white p-5 shadow-xl'>
-			<div className='flex flex-col'>
-				<div className='mb-8 flex flex-row justify-between'>
-					<span className='text-xl font-bold text-black'>{parkingInfo.name}</span>
-					<div onClick={() => mapOverlay?.setMap(null)}>
-						<Close className='absolute top-5 right-5 h-6 w-6 text-black' />
-					</div>
-				</div>
-				<div className='mb-3 flex flex-row gap-2'>
-					<Location className='h-[16px] w-[16px] text-gray-400' />
-					<span className='text-sm text-black'>{parkingInfo.addr}</span>
-				</div>
-				<div className='mb-3 flex flex-row gap-2'>
-					<Telephone className='text-gray-400' />
-					<span className='text-sm text-black'>
-						{parkingInfo.telNo === '' ? '-' : parkingInfo.telNo}
-					</span>
+	return `<div id='park-info-detail-card'>
+				<div class='header'>
+					<strong className='text-[14px]'>${parkInfo.name}</strong>
+					<div>${parkInfo.type}</div>
 				</div>
 
-				<hr className='my-3' />
+				<hr />
 
-				<div>
-					<div className='mb-4'>
-						<span className='text-xl font-bold text-black'>주차 정보</span>
+				<div class='content'>
+					<ul class='basic-info-list'>
+						<li class='phone'>
+							<div class='icon'>
+								<img src="/icons/phoneIcon.svg" alt='phoneIcon' />
+							</div>
+							<div>전화번호 : </div>
+							<div>${parkInfo.telNo}</div>
+						</li>
+						<li class='location'>
+							<div class='icon'>
+								<img src="/icons/locationIcon.svg" alt='locationIcon' />
+							</div>
+							<div class='title'>주소 : </div>
+							<div>${parkInfo.addr}</div>
+						</li>
+					</ul>
+
+					<div class='parking-lot-table'>
+						<table className='my-2 table-auto border-separate border-spacing-0 overflow-hidden rounded-md border border-gray-400'>
+							<thead>
+								<tr>
+									<th>총 주차면</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td className='bg-gray-600 py-0.5 text-center font-bold text-white'>
+										${Number(parkInfo.totalParkingCount).toLocaleString()}
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
-					<div className='mb-3 flex flex-col gap-2'>
-						<span className='text-sm text-black'>
-							총 주차면 : {parkingInfo.totalParkingCount.toLocaleString()}대
-						</span>
-						<span className='text-sm text-black'>
-							실시간 주차 현황 :
-							{parkingInfo.availableParkingSpots
-								? ` ${parkingInfo.availableParkingSpots.toLocaleString()}대`
-								: ' -'}
-						</span>
-					</div>
+
+
+					<section>
+						<div class='title'>
+							<div class='icon'>
+								<img src="/icons/currencyWonIcon.svg" alt='currencyWonIcon' />
+							</div>
+							<b>요금정보</b>
+						</div>
+						<ul className='list-inside list-disc'>
+						${chargeInfo()}
+						</ul>
+					</section>
+
+					<hr />
+
+					<section>
+						<div class='title'>
+							<div class='icon'>
+								<img src="/icons/timeIcon.svg" alt='timeIcon' />
+							</div>
+							<b>운영정보</b>
+						</div>
+						<ul className='list-inside list-disc'>
+							<li>
+								평일 운영시간 : ${parkInfo.weekdayOperatingHours}
+							</li>
+							<li>
+								주말 운영시간 : ${parkInfo.weekendOperatingHours}
+							</li>
+							<li>
+								공휴일 운영시간 : ${parkInfo.holidayOperatingHours}
+							</li>
+						</ul>
+					</section>
+
+					<hr />
+
+					<section>
+						<div class='title'>
+							<div class='icon'>
+								<img src="/icons/addLocationIcon.svg" alt='addLocationIcon' />
+							</div>
+							<b>정보등록(수정)일자</b>
+						</div>
+						<ul className='list-inside list-disc'>
+							<li>${parkInfo.updatedAt}</li>
+						</ul>
+					</section>
 				</div>
-
-				<hr className='my-3' />
-
-				<div>
-					<div className='mb-4'>
-						<span className='text-xl font-bold text-black'>요금 정보</span>
-					</div>
-					<div className='mb-3 flex flex-col gap-2'>
-						<span className='text-sm text-black'>
-							기본 요금 : {parkingInfo.baseParkingFee.toLocaleString()}원 / {parkingInfo.baseParkingTime}분
-						</span>
-					</div>
-					<div className='mb-3 flex flex-col gap-2'>
-						<span className='text-sm text-black'>
-							추가 요금 : {parkingInfo.additionalParkingFee.toLocaleString()}원 /{' '}
-							{parkingInfo.additionalParkingTime}분
-						</span>
-					</div>
-					<div className='mb-3 flex flex-col gap-2'>
-						<span className='text-sm text-black'>
-							정기권 요금 :{' '}
-							{parkingInfo.monthlyParkingFee ? `${parkingInfo.monthlyParkingFee.toLocaleString()}원` : '-'}
-						</span>
-					</div>
-				</div>
-
-				<hr className='my-3' />
-
-				<div>
-					<div className='mb-4'>
-						<span className='text-xl font-bold text-black'>운영 정보</span>
-					</div>
-					<div className='mb-3 flex flex-col gap-2'>
-						<span className='text-sm text-black'>
-							평일 운영시간 : {parkingInfo.weekdayOperatingHours}
-						</span>
-					</div>
-					<div className='mb-3 flex flex-col gap-2'>
-						<span className='text-sm text-black'>
-							주말 운영시간 : {parkingInfo.weekendOperatingHours}
-						</span>
-					</div>
-					<div className='mb-3 flex flex-col gap-2'>
-						<span className='text-sm text-black'>
-							공휴일 운영시간 : {parkingInfo.holidayOperatingHours}
-						</span>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+			</div>`;
 };
-
-export default ParkingInfoDetail;
